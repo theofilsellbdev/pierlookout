@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${shipporiSerif.variable} ${cormorantSerif.variable} antialiased`}
+        className={`${shipporiSerif.variable} ${cormorantSerif.variable} antialiased bg-[#FAFCFC]`}
       >
         {children}
       </body>
