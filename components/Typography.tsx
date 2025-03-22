@@ -21,7 +21,7 @@ export const Display = <T extends ElementType = 'h1'>(
   return (
     <Component
       className={cn(
-        'text-4xl md:text-5xl lg:text-6xl xl:text-7xl tracking-normal leading-none',
+        'text-4xl md:text-5xl lg:text-6xl xl:text-7xl tracking-normal leading-none font-[--font-shippori-serif]',
         className
       )}
       {...props}
@@ -38,7 +38,7 @@ export const Title = <T extends ElementType = 'h2'>(
   return (
     <Component
       className={cn(
-        'text-4xl md:text-5xl lg:text-6xl tracking-normal leading-tight',
+        'text-4xl md:text-5xl lg:text-6xl tracking-normal leading-tight font-[--font-shippori-serif]',
         className
       )}
       {...props}
@@ -55,7 +55,7 @@ export const Heading = <T extends ElementType = 'h3'>(
   return (
     <Component
       className={cn(
-        'text-3xl md:text-4xl lg:text-5xl tracking-normal leading-tight',
+        'text-3xl md:text-4xl lg:text-5xl tracking-normal leading-tight font-[--font-shippori-serif]',
         className
       )}
       {...props}
@@ -72,7 +72,7 @@ export const Subheading = <T extends ElementType = 'h4'>(
   return (
     <Component
       className={cn(
-        'text-2xl md:text-3xl lg:text-4xl tracking-normal leading-snug',
+        'text-2xl md:text-3xl lg:text-4xl tracking-normal leading-snug font-[--font-shippori-serif]',
         className
       )}
       {...props}
@@ -89,7 +89,7 @@ export const Lead = <T extends ElementType = 'p'>(
   return (
     <Component
       className={cn(
-        'text-lg md:text-xl leading-relaxed',
+        'text-lg md:text-xl leading-relaxed font-[--font-cormorant-serif]',
         className
       )}
       {...props}
@@ -107,7 +107,7 @@ export const Body = <T extends ElementType = 'p'>(
   return (
     <Component
       className={cn(
-        'text-base md:text-lg leading-relaxed',
+        'text-base md:text-lg leading-relaxed font-[--font-cormorant-serif]',
         className
       )}
       {...props}
@@ -124,7 +124,7 @@ export const Small = <T extends ElementType = 'p'>(
   return (
     <Component
       className={cn(
-        'text-sm md:text-base leading-tight sm:leading-relaxed',
+        'text-sm md:text-base leading-tight sm:leading-relaxed font-[--font-cormorant-serif]',
         className
       )}
       {...props}
