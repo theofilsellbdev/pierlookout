@@ -4,6 +4,7 @@ import "./globals.css";
 const shipporiSerif = Shippori_Mincho({
   variable: "--font-shippori-serif",
   subsets: ["latin"],
+  style: 'normal',
   weight: ["400", "500", "600", "700", "800"]
 });
 

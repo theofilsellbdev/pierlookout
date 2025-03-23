@@ -70,7 +70,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
         try {
           // Access static image from Firebase storage
-          const staticRef = ref(storage, `/static/${path}.webp`);
+          const staticRef = ref(storage, `/${path}.webp`);
           const staticUrl = await getDownloadURL(staticRef);
           if (isMounted) {
             setImageUrl(staticUrl);
