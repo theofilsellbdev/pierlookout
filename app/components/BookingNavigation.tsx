@@ -13,19 +13,22 @@ export default function BookingNavigation(): JSX.Element {
   ];
   
   const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
+    setMenuOpen(prevState => !prevState);
   };
 
-  // Button animation on hover
+  // Button animation on hover - converted to Tailwind classes
   const buttonAnimation = "transform transition-transform duration-300 hover:scale-105 active:scale-95";
   
   return (
     <div className="w-[90vw] md:w-[80vw] mx-auto py-3 md:py-6">
       <div className="flex flex-col lg:flex-row justify-between items-center lg:items-start gap-6 md:gap-8">
         {/* Book The Flat Button with animation */}
-        <Link href="/booking" className={`w-full lg:w-auto ${buttonAnimation}`}>
-          <div className="w-full lg:w-auto px-6 py-4 outline outline-offset-[-1px] outline-slate-600 flex justify-center items-center hover:bg-slate-50 transition-all">
-            <Body className="text-slate-600 font-medium font-[--font-shippori-serif] uppercase tracking-[2.5px] text-center">
+        <Link 
+          href="/booking" 
+          className={`w-full lg:w-auto ${buttonAnimation}`}
+        >
+          <div className="w-full lg:w-auto px-6 py-4 outline outline-offset-[-1px] outline-slate-600 flex justify-center items-center hover:bg-slate-50 transition-colors">
+            <Body className="text-slate-600 font-medium font-[--font-shippori-serif] uppercase tracking-widest text-center">
               Book The Flat
             </Body>
           </div>
@@ -35,7 +38,7 @@ export default function BookingNavigation(): JSX.Element {
         <div className="sm:hidden w-full flex justify-end">
           <button 
             onClick={toggleMenu}
-            className={`text-slate-600 font-medium font-[--font-shippori-serif] uppercase tracking-wider ${buttonAnimation}`}
+            className="text-slate-600 font-medium font-[--font-shippori-serif] uppercase tracking-widest transform transition-transform duration-300 hover:scale-105 active:scale-95"
           >
             Menu
             <span className={`ml-2 inline-block transition-transform duration-300 ${menuOpen ? 'rotate-180' : ''}`}>
@@ -47,7 +50,7 @@ export default function BookingNavigation(): JSX.Element {
         {/* Mobile Menu (dropdown) */}
         <div 
           className={`sm:hidden w-full overflow-hidden transition-all duration-300 ease-in-out ${
-            menuOpen ? 'max-h-[300px] opacity-100' : 'max-h-0 opacity-0'
+            menuOpen ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'
           }`}
         >
           <div className="flex flex-col items-end gap-4 py-4">
