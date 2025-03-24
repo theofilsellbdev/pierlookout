@@ -37,7 +37,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const imageUrls = await fetchMetadataImages();
   
   // Fallback URLs for images that failed to load from Firebase
-  const baseUrl = 'https://www.pierlookout.vercel.app';
+  const baseUrl = 'https://pierlookout.vercel.app';
   const defaultOpenGraph = `${baseUrl}/opengraph-image.jpg`;
   const defaultTwitter = `${baseUrl}/twitter-image.jpg`;
   
