@@ -1,5 +1,5 @@
 // Gallery.tsx
-import { GalleryImage } from "@/components/GalleryImage";
+import { GalleryImage } from "@/components/forms/GalleryImage";
 import Link from "next/link";
 import { JSX, useState } from "react";
 

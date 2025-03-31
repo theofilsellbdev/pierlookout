@@ -1,4 +1,4 @@
-import OptimizedImage from "@/components/OptimizedImage";
+import OptimizedImage from "@/components/forms/OptimizedImage";
 import { Lead } from "@/components/Typography";
 import { JSX } from "react";
 

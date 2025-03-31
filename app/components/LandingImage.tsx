@@ -1,5 +1,5 @@
 import { LinkElement } from "@/components/Navigation";
-import OptimizedImage from "@/components/OptimizedImage";
+import OptimizedImage from "@/components/forms/OptimizedImage";
 import { JSX } from "react";
 
 export default function LandingImage(): JSX.Element {

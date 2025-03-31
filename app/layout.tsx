@@ -1,5 +1,6 @@
 import { Cormorant, Shippori_Mincho, Goudy_Bookletter_1911 } from "next/font/google";
 import "./globals.css";
+import PrelineScriptWrapper from "@/components/preline/PrelineScriptWrapper";
 
 const shipporiSerif = Shippori_Mincho({
   variable: "--font-shippori-serif",
@@ -28,10 +29,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/preline@2.0.2/dist/preline.min.css" />
+      </head>
       <body
         className={`${shipporiSerif.variable} ${cormorantSerif.variable} ${goudySerif.variable} antialiased bg-[#FAFCFC]`}
       >
         {children}
+        <PrelineScriptWrapper />
       </body>
     </html>
   );

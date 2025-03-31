@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { ref, getDownloadURL } from 'firebase/storage';
 import { storage } from '@/lib/firebase';
-import { Small } from './Typography';
+import { Small } from '../Typography';
 
 // Component Props
 interface OptimizedImageProps {
@@ -221,6 +221,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
             quality={quality}
             priority={priority}
             loading={!priority ? loading : 'eager'}
+            unoptimized
           />
         )
       ) : (

@@ -7,8 +7,7 @@ export default function BookingNavigation(): JSX.Element {
   const [menuOpen, setMenuOpen] = useState(false);
   
   const navigationLinks = [
-    { href: '/photographs', label: 'Photographs' },
-    { href: '/local', label: 'Local Directory' },
+    { href: '/gallery', label: 'Photographs' },
     { href: '/contact', label: 'Contact Us' },
   ];
   

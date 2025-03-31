@@ -2,7 +2,7 @@
 import { JSX, useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Lead, Subheading, Small } from "@/components/Typography";
-import OptimizedImage from "@/components/OptimizedImage";
+import OptimizedImage from "@/components/forms/OptimizedImage";
 import Link from "next/link";
 
 // Define types
