@@ -2,19 +2,17 @@
 
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
+// Import the type definition from Preline
+// Adjust the path if necessary (e.g., 'preline/dist/types')
+import type { IStaticMethods } from 'preline';
 
-// Add type augmentation for Preline objects
+// Type augmentation using Preline's own type
 declare global {
   interface Window {
-    // *** REMOVE the '?' to match the likely existing required declaration ***
-    HSStaticMethods: {
-      autoInit: (collection?: string | string[] | null | undefined) => void; // Match expected signature if known, otherwise keep simple
-      // You might need to add other methods here if you use them directly,
-      // or ideally, find Preline's own type definition (e.g., IStaticMethods)
-      // and use that if it's exported.
-    };
+    // Use the imported IStaticMethods type
+    HSStaticMethods: IStaticMethods;
 
-    // Keep these optional as they might be specific additions
+    // Keep these optional as they are likely custom additions or less commonly typed
     $hsOverlayCollection?: unknown[];
     $hsDropdownCollection?: unknown[];
     $hsTooltipCollection?: unknown[];
@@ -27,51 +25,9 @@ declare global {
 export default function PrelineScript() {
   const path = usePathname();
 
-  // --- Option 1: Keep Explicit Checks (Recommended for Clarity) ---
-  // useEffect(() => {
-  //   // Initialize collections (no change)
-  //   if (typeof window !== 'undefined') {
-  //     window.$hsOverlayCollection = window.$hsOverlayCollection || [];
-  //     // ... other collections
-  //     window.$hsSelectCollection = window.$hsSelectCollection || [];
-  //   }
-
-  //   const initPreline = async (): Promise<void> => {
-  //     try {
-  //       await import('preline/dist/preline.js');
-  //       setTimeout(() => {
-  //         // Runtime check remains crucial!
-  //         if (typeof window !== 'undefined' &&
-  //             window.HSStaticMethods && // Check existence
-  //             typeof window.HSStaticMethods.autoInit === 'function') {
-  //           window.HSStaticMethods.autoInit();
-  //         }
-  //       }, 100);
-  //     } catch (error) {
-  //       console.error('Error loading Preline:', error);
-  //     }
-  //   };
-  //   initPreline().catch(err => console.error('Failed to initialize Preline:', err));
-  // }, []);
-
-  // useEffect(() => {
-  //   // Runtime check remains crucial!
-  //   if (typeof window !== 'undefined' &&
-  //       window.HSStaticMethods && // Check existence
-  //       typeof window.HSStaticMethods.autoInit === 'function') {
-  //     setTimeout(() => {
-  //       // Re-check inside timeout is safest
-  //       if (window.HSStaticMethods && typeof window.HSStaticMethods.autoInit === 'function') {
-  //           window.HSStaticMethods.autoInit();
-  //       }
-  //     }, 100);
-  //   }
-  // }, [path]);
-
-
-  // --- Option 2: Use Optional Chaining (Concise) ---
+  // Initialize the collections (needed for some Preline components)
+  // Ensure this runs before the first autoInit call might need them
   useEffect(() => {
-    // Initialize collections (no change)
     if (typeof window !== 'undefined') {
       window.$hsOverlayCollection = window.$hsOverlayCollection || [];
       window.$hsDropdownCollection = window.$hsDropdownCollection || [];
@@ -80,34 +36,52 @@ export default function PrelineScript() {
       window.$hsTabsCollection = window.$hsTabsCollection || [];
       window.$hsSelectCollection = window.$hsSelectCollection || [];
     }
+  }, []); // Run only once on mount
 
+  // Effect for initializing Preline AFTER dynamic import
+  useEffect(() => {
     const initPreline = async (): Promise<void> => {
       try {
-        // Dynamic import of Preline
+        // Dynamic import of Preline JS
         await import('preline/dist/preline.js');
+
+        // Use setTimeout to defer initialization slightly, ensuring DOM elements are ready
+        // and the Preline script has fully executed and attached HSStaticMethods.
         setTimeout(() => {
-          // Optional chaining handles potential undefinedness at runtime
-           if (typeof window !== 'undefined') { // Still need window check
+           // Runtime check + Optional chaining is safest
+           if (typeof window !== 'undefined') {
               window.HSStaticMethods?.autoInit?.();
+              // console.log('Preline initialized on mount/load');
            }
-        }, 100);
+        }, 100); // 100ms delay is usually sufficient
+
       } catch (error) {
-        console.error('Error loading Preline:', error);
+        console.error('Error loading or initializing Preline:', error);
       }
     };
 
-    initPreline().catch(err => console.error('Failed to initialize Preline:', err));
-  }, []); // Empty dependency array: Run only once on mount
+    // Call the async function
+    initPreline().catch(err => console.error('Failed to run initPreline:', err));
 
+    // This effect should only run once on mount to load the script.
+    // Re-initialization is handled by the effect below that depends on `path`.
+  }, []); // Empty dependency array: Run only once on initial mount
+
+
+  // Effect for re-initializing Preline on route changes (path dependency)
   useEffect(() => {
-    // Re-initialize on path change using optional chaining
-     if (typeof window !== 'undefined') { // Still need window check
+    // No need to re-import 'preline/dist/preline.js' here, it's already loaded.
+    // We just need to re-run autoInit.
+
+    // Use setTimeout again for consistency and to ensure DOM updates from navigation are complete.
+     if (typeof window !== 'undefined') {
        setTimeout(() => {
          window.HSStaticMethods?.autoInit?.();
+         // console.log('Preline re-initialized on path change:', path);
        }, 100);
      }
   }, [path]); // Dependency array: Run when path changes
 
-
-  return (<></>); // Return null or fragment, component must return something renderable
+  // This component doesn't render anything itself
+  return null;
 }
