@@ -54,7 +54,7 @@ export default function NotFoundClient() {
             </Link>
             
             <Link 
-              href="/booking" 
+              href="/" 
               className={`px-6 py-4 outline outline-offset-[-1px] outline-stone-600 flex justify-center items-center hover:bg-stone-50 transition-colors ${buttonAnimation}`}
             >
               <Body className="text-stone-700 font-medium font-[--font-shippori-serif] uppercase tracking-widest text-center">

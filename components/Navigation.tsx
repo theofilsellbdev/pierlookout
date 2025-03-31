@@ -84,7 +84,7 @@ export function Navbar(): JSX.Element {
   // Menu navigation links - REMOVED Local Directory, Terms, Privacy
   const navigationLinks = [
     { name: 'Home', href: '/' },
-    { name: 'Book Now', href: '/booking' },
+    { name: 'Book Now', href: '/' },
     { name: 'Gallery', href: '/gallery' },
     // { name: 'Local Directory', href: '/local' }, // Removed
     { name: 'Contact', href: '/contact' },
@@ -143,7 +143,7 @@ export function Navbar(): JSX.Element {
         </Lead>
 
         <div>
-          <LinkElement href="/booking" className="text-stone-700 font-medium">
+          <LinkElement href="/" className="text-stone-700 font-medium">
             Book
           </LinkElement>
         </div>
@@ -268,7 +268,7 @@ export function Footer(): JSX.Element {
   // Footer navigation links - REMOVED Local Directory, Terms, Privacy
   const footerLinks = [
     { name: 'Home', href: '/' },
-    { name: 'Book Now', href: '/booking' },
+    { name: 'Book Now', href: '/' },
     { name: 'Gallery', href: '/gallery' },
     // { name: 'Local Directory', href: '/local' }, // Removed
     { name: 'Contact', href: '/contact' },

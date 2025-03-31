@@ -23,7 +23,7 @@ export default function BookingNavigation(): JSX.Element {
       <div className="flex flex-col lg:flex-row justify-between items-center lg:items-start gap-6 md:gap-8">
         {/* Book The Flat Button with animation */}
         <Link 
-          href="/booking" 
+          href="/" 
           className={`w-full lg:w-auto ${buttonAnimation}`}
         >
           <div className="w-full lg:w-auto px-6 py-4 outline outline-offset-[-1px] outline-slate-600 flex justify-center items-center hover:bg-slate-50 transition-colors">

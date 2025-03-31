@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Homepage -->
+  <url>
+    <loc>https://pierlookout.vercel.app/</loc>
+    <lastmod>2024-03-15</lastmod> <!-- Optional: Update with last significant change date -->
+    <changefreq>weekly</changefreq> <!-- Optional: How often content might change -->
+    <priority>1.0</priority> <!-- Optional: Priority relative to other pages (1.0 is highest) -->
+  </url>
+
+  <!-- Gallery Page -->
+  <url>
+    <loc>https://pierlookout.vercel.app/gallery</loc>
+    <lastmod>2024-03-15</lastmod> <!-- Optional: Update if gallery changes often -->
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Contact Page -->
+  <url>
+    <loc>https://pierlookout.vercel.app/contact</loc>
+    <lastmod>2024-03-15</lastmod> <!-- Optional: Unlikely to change often -->
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Add other static pages here if you create them -->
+  <!-- e.g., /booking if it's a separate static page -->
+  <!-- <url>
+    <loc>https://pierlookout.vercel.app/booking</loc>
+    <lastmod>2024-03-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url> -->
+
+</urlset>

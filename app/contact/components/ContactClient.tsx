@@ -92,7 +92,7 @@ export default function ContactPageClient() {
               Book your stay now for an unforgettable experience on the Eastbourne seafront.
             </Lead>
             <Link 
-              href="/booking" 
+              href="/" 
               className={`w-full max-w-md px-6 py-4 outline outline-offset-[-1px] outline-stone-600 flex justify-center items-center hover:bg-white transition-colors ${buttonAnimation}`}
             >
               <Body className="text-stone-700 font-medium font-[--font-shippori-serif] uppercase tracking-widest text-center">
