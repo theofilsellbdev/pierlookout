@@ -40,7 +40,7 @@ export default function LandingSection() {
                 console.error("Error playing video:", error);
             });
             setDisplay(true);
-            
+
         }
     }, [display]);
 
@@ -85,13 +85,12 @@ export default function LandingSection() {
                 >
                     <video
                         className="absolute top-0 left-0 w-full h-full object-cover object-top z-0 opacity-80"
-                        src="Watercolour.mp4"
                         muted
+                        autoPlay
                         playsInline
                         disablePictureInPicture
                         controls={false}
                         ref={vidRef}
-
                         onEnded={() => {
                             // prevent first-frame flash:
                             requestAnimationFrame(() => {
@@ -99,7 +98,10 @@ export default function LandingSection() {
                             });
                         }}
 
-                    />
+                    >
+                        <source src="https://firebasestorage.googleapis.com/v0/b/pierlookout.firebasestorage.app/o/Watercolour.webm?alt=media&token=3afa5c3b-c1d3-4b9c-8f86-0f35b86ce2b1" type="video/webm" />
+                        <source src="https://firebasestorage.googleapis.com/v0/b/pierlookout.firebasestorage.app/o/Watercolour.mp4?alt=media&token=4bbbbd72-2eef-4b27-a4c5-d37db784daef" type="video/mp4" />
+                    </video>
                 </motion.div>
                 <div className="w-full h-full absolute top-0 left-0 bg-transparent flex flex-col items-center justify-center z-10 px-[5%]">
                     {/* 1. Description */}
