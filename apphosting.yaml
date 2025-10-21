@@ -1,0 +1,57 @@
+# apphosting.yaml
+# Firebase App Hosting config for Next.js (App Router)
+# Keeps environment values in Cloud Secret Manager.
+
+# ---- Cloud Run instance sizing (tweak as needed) ----
+runConfig:
+  minInstances: 0         # cold start is OK for most brochure sites
+  maxInstances: 10        # cap burst; raise if you expect spikes
+  concurrency: 80         # default for App Hosting
+  cpu: 1
+  memoryMiB: 512
+
+# ---- Environment variables & secrets ----
+# All variables below will be available to both the BUILD and RUNTIME phases.
+env:
+  # Firebase web config (safe to expose on the client, but keep in Secrets for centralized control)
+  - variable: NEXT_PUBLIC_API_KEY
+    secret: NEXT_PUBLIC_API_KEY
+    availability: [BUILD, RUNTIME]
+
+  - variable: NEXT_PUBLIC_AUTH_DOMAIN
+    secret: NEXT_PUBLIC_AUTH_DOMAIN
+    availability: [BUILD, RUNTIME]
+
+  - variable: NEXT_PUBLIC_PROJECT_ID
+    secret: NEXT_PUBLIC_PROJECT_ID
+    availability: [BUILD, RUNTIME]
+
+  - variable: NEXT_PUBLIC_STORAGE_BUCKET
+    secret: NEXT_PUBLIC_STORAGE_BUCKET
+    availability: [BUILD, RUNTIME]
+
+  - variable: NEXT_PUBLIC_MESSAGE_SENDER_ID
+    secret: NEXT_PUBLIC_MESSAGE_SENDER_ID
+    availability: [BUILD, RUNTIME]
+
+  - variable: NEXT_PUBLIC_APP_ID
+    secret: NEXT_PUBLIC_APP_ID
+    availability: [BUILD, RUNTIME]
+
+  - variable: NEXT_PUBLIC_MEASUREMENT_ID
+    secret: NEXT_PUBLIC_MEASUREMENT_ID
+    availability: [BUILD, RUNTIME]
+
+  # Google APIs
+  - variable: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+    secret: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+    availability: [BUILD, RUNTIME]
+
+  - variable: NEXT_PUBLIC_GOOGLE_SEARCH_CONSOLE_API_KEY
+    secret: NEXT_PUBLIC_GOOGLE_SEARCH_CONSOLE_API_KEY
+    availability: [BUILD, RUNTIME]
+
+  # Typical Node flag for Next.js — keep at RUNTIME to avoid buildpack quirks
+  - variable: NODE_ENV
+    value: "production"
+    availability: [RUNTIME]
