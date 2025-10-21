@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /.git/
+Disallow: /.env
+Disallow: /server-status
+Disallow: /swagger
