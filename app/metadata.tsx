@@ -2,9 +2,9 @@ import { Metadata } from 'next';
 // Removed Firebase imports as we'll use static images for core metadata
 
 // --- Configuration Constants ---
-const SITE_TITLE = "Pier Lookout | Luxury Seafront Accommodation in Eastbourne";
-const SITE_DESCRIPTION = "A top floor regency flat with breathtaking views of the Eastbourne pier and seafront. Enjoy luxury accommodation with perfect sea views.";
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://pierlookout.vercel.app'; // Use env var if available
+const SITE_TITLE = "Pier Lookout, Seafront Views from a regency Flat in Eastbourne";
+const SITE_DESCRIPTION = "A top floor regency flat with breathtaking views of the Eastbourne pier and seafront. Enjoy an apartment with perfect sea views.";
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://pierlookout--pierlookout.europe-west4.hosted.app'; // Use env var if available
 
 // Recommended OG Image size: 1200x630 (1.91:1 ratio)
 const OG_IMAGE_WIDTH = 1200;
