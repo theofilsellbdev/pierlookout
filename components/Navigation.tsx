@@ -43,7 +43,7 @@ export function Navbar(): JSX.Element {
       <motion.div
         initial={{ height: "1rem" }}
         animate={{ height: navHeight }}
-        transition={{ delay: 5, duration: 2 }}
+        transition={{ delay: 1, duration: 2 }}
         className={`block bg-[#FAFCFC]`}
       />
 
@@ -70,7 +70,7 @@ export function Navbar(): JSX.Element {
                 }
               }}
 
-              
+
             >
               {char === ' ' ? '\u00A0' : char}
             </motion.span>
@@ -112,7 +112,7 @@ export function Footer(): JSX.Element {
       style={{ fontFamily: "--var-shippori-serif" }}
     >
       <p className="text-[clamp(.6rem,2vw,.8rem)] text-center">
-       Pier Lookout, {new Date().getFullYear()} 
+        Pier Lookout, {new Date().getFullYear()}
       </p>
     </footer>
   );
