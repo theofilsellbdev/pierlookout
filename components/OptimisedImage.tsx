@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { ref, getDownloadURL } from 'firebase/storage';
 import { storage } from '@/lib/firebase';
-import { Small } from '../Typography';
 
 // Component Props
 interface OptimizedImageProps {
@@ -177,7 +176,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
           ...style,
         }}
       >
-        <Small className='italic text-white'>Image failed to load</Small>
+        <small className='italic text-white text-[clamp(.6rem,2vw,.8rem)]'>Image failed to load</small>
       </div>
     );
   }

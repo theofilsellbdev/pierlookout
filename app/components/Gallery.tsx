@@ -1,107 +1,76 @@
 // Gallery.tsx
-import { GalleryImage } from "@/components/forms/GalleryImage";
-import Link from "next/link";
-import { JSX, useState } from "react";
+
+import OptimizedImage from "@/components/OptimisedImage";
+import { JSX, useEffect, useState } from "react";
+
+interface selectedImage {
+  imageTitle: string;
+  path: string;
+}
+
+const IMAGES: selectedImage[] = [
+  { imageTitle: 'A Living Space', path: 'SofaArea' },
+  { imageTitle: 'The Bedroom', path: 'BedroomA' },
+  { imageTitle: 'The Kitchen', path: 'Kitchen' },
+  { imageTitle: 'A Pier View', path: 'Pier' },
+  { imageTitle: 'The Flat', path: 'WideAngle' },
+  { imageTitle: 'Window View', path: 'Window' }
+]
 
 export default function Gallery(): JSX.Element {
-  // Title for the gallery section
-  const galleryTitle = "Explore Our Space";
-  
-  // Images data
-  const images = [
-    { path: "Kitchen", alt: "Kitchen" },
-    { path: "BedroomA", alt: "Bedroom" },
-    { path: "WideAngle", alt: "The Flat" }
-  ];
-  
-  // State for mobile carousel
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  
-  // Navigation functions
-  const goToNextImage = () => {
-    setCurrentImageIndex((prevIndex) => 
-      prevIndex === images.length - 1 ? 0 : prevIndex + 1
-    );
-  };
-  
-  const goToPrevImage = () => {
-    setCurrentImageIndex((prevIndex) => 
-      prevIndex === 0 ? images.length - 1 : prevIndex - 1
-    );
-  };
+  const [selectedImage, setSelectedImage] = useState<selectedImage>({ imageTitle: 'A Living Space', path: 'SofaArea' });
+  const [controls, setControls] = useState<[selectedImage, selectedImage]>([IMAGES[IMAGES.length - 1], IMAGES[1]]);
+
+  useEffect(() => {
+    const updateControls = () => {
+      const currentIndex = IMAGES.findIndex(img => img.path === selectedImage.path);
+      const prevIndex = currentIndex === 0 ? IMAGES.length - 1 : currentIndex - 1;
+      const nextIndex = (currentIndex + 1) % IMAGES.length;
+      setControls([IMAGES[prevIndex], IMAGES[nextIndex]]);
+    };
+    updateControls();
+  }, [selectedImage]);
 
   return (
-    <div className="w-[90vw] md:w-[80vw] mx-auto py-8 md:py-12">
-      {/* Gallery Title */}
-      <div className="flex flex-col items-center justify-center mb-6 md:mb-8">
-        <h2 className="text-2xl md:text-3xl font-[--font-shippori-serif] text-center text-slate-700">{galleryTitle}</h2>
-        <Link href="/gallery" className="mt-2 text-sm underline transition-colors font-[--font-cormorant-serif] text-slate-500">
-          View full gallery
-        </Link>
-      </div>
-      {/* Mobile layout - carousel with navigation buttons */}
-      <div className="md:hidden">
-        <div className="relative">
-          {/* Current image */}
-          <div className="w-full max-w-[80vw] mx-auto aspect-square">
-            <GalleryImage 
-              path={images[currentImageIndex].path} 
-              alt={images[currentImageIndex].alt} 
-            />
-          </div>
-          
-          {/* Navigation removed from here - moved to bottom */}
+    <section
+      className="w-full h-fit md:h-[80vh] px-[2rem] flex items-center justify-center py-10"
+      style={{ fontFamily: "--var-shippori-serif" }}
+    >
+      {/* Grid */}
+      <div className="max-w-5xl w-full h-full grid grid-cols-1 md:grid-cols-[1fr_auto] grid-rows-[auto_auto_1fr] md:grid-rows-[auto_1fr] gap-x-[5rem] gap-y-[clamp(.5rem,1vw,1rem)]">
+        {/* Image Container */}
+        <div className="relative h-full w-auto aspect-square order-2 md:order-3 col-span-1 md:row-span-2 bg-gray-300">
+          <OptimizedImage
+            path={selectedImage.path}
+            alt={selectedImage.imageTitle}
+            objectFit="cover"
+            quality={100}
+            priority
+          />
         </div>
-        
-        {/* Navigation controls and counter in a row */}
-        <div className="flex justify-center items-center gap-8 mt-4">
-          <button 
-            onClick={goToPrevImage}
-            className="text-slate-800 hover:text-slate-600 transition-colors"
-            aria-label="Previous image"
+        {/* Title */}
+        <div className="flex flex-col justify-center order-1 col-span-1 text-[clamp(.7rem,2vw,1rem)] py-[clamp(.5rem,1vw,1rem)]">
+          <h1 className="text-[clamp(1rem,2rem,3rem)]">Gallery</h1>
+          <h2 className="pl-2 border-l-1 border-l-gray-600">{selectedImage ? selectedImage.imageTitle : "No Image Selected"}</h2>
+        </div>
+        {/* Controls */}
+        <div className="flex flex-col sm:flex-row order-2 md:order-3 w-full sm:justify-between sm:items-end md:pr-[4rem]">
+          <button
+            className="flex flex-col"
+            onClick={() => setSelectedImage(controls[0])}
           >
-            <span className="font-[--font-shippori-serif] text-sm tracking-wider">Previous</span>
+            <span className="text-[clamp(.6rem,2vw,.7rem)]">Previous</span>
+            <span className="text-[clamp(.7rem,2vw,1rem)]">{controls[0].imageTitle}</span>
           </button>
-          
-          <div className="font-[--font-shippori-serif] text-sm tracking-widest text-slate-700">
-            {currentImageIndex + 1} / {images.length}
-          </div>
-          
-          <button 
-            onClick={goToNextImage}
-            className="text-slate-800 hover:text-slate-600 transition-colors"
-            aria-label="Next image"
+          <button
+            className="flex flex-col sm:items-end"
+            onClick={() => setSelectedImage(controls[1])}
           >
-            <span className="font-[--font-goudy-serif] text-sm tracking-wider">Next</span>
+            <span className="text-[clamp(.6rem,2vw,.7rem)]">Next</span>
+            <span className="text-[clamp(.7rem,2vw,1rem)]">{controls[1].imageTitle}</span>
           </button>
         </div>
       </div>
-      
-      {/* Tablet layout - 2x2 grid with proper sizing */}
-      <div className="hidden md:grid lg:hidden grid-cols-2 gap-6">
-        <div className="aspect-square">
-          <GalleryImage path="SofaArea" alt="Living Room" />
-        </div>
-        <div className="aspect-square">
-          <GalleryImage path="BedroomA" alt="Bedroom" />
-        </div>
-        <div className="col-span-2 max-h-[40vh]">
-          <GalleryImage path="Kitchen" alt="Kitchen" fillHeight={true} />
-        </div>
-      </div>
-      
-      {/* Desktop layout - horizontal row with constrained image sizes */}
-      <div className="hidden lg:grid grid-cols-3 gap-6 xl:gap-8">
-        <div className="aspect-square">
-          <GalleryImage path="SofaArea" alt="Living Room" />
-        </div>
-        <div className="aspect-square">
-          <GalleryImage path="BedroomA" alt="Bedroom" />
-        </div>
-        <div className="aspect-square">
-          <GalleryImage path="Kitchen" alt="Kitchen" />
-        </div>
-      </div>
-    </div>
+    </section>
   );
 }

@@ -1,565 +1,585 @@
-// LocalDirectory.tsx
-import { JSX, useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Lead, Subheading, Small } from "@/components/Typography";
-import OptimizedImage from "@/components/forms/OptimizedImage";
-import Link from "next/link";
+import { motion } from "framer-motion";
+import React, { JSX, useEffect, useState } from "react";
 
-// Define types
-type Listing = {
-  id: string;
-  title: string;
-  image: string;
-  walkingDistance: string;
-  recommendation: string;
-  dates: string;
-  pricePoint: 1 | 2 | 3;
-  description: string;
-  address?: string;
-  phone?: string;
-  website?: string;
-};
+const ASE_DESTINATIONS: Array<{ name: string; price: string; distance: string; link: string }> = [
+    {
+        name: "Seven Sisters Country Park",
+        price: "Free",
+        distance: "Starts wherever you'd like",
+        link: "www.sevensisters.org.uk",
+    },
+    {
+        name: "Eastbourne Pier",
+        price: "£",
+        distance: "2 min walk",
+        link: "www.eastbournepier.com",
+    },
+    {
+        name: "Coastal Culture Trail",
+        price: "Free",
+        distance: "Starts wherever you'd like",
+        link: "www.coastalculturetrail.com",
+    },
+    {
+        name: "Kayak & Paddleboard Hire",
+        price: "££",
+        distance: "15 min drive",
+        link: "www.sevensisters.org.uk/things-to-do/kayaking-paddle-boarding/",
+    },
+];
 
-type Category = {
-  id: string;
-  title: string;
-  items: Listing[];
-};
+
+const CULTURE_DESTINATIONS: Array<{ name: string; price: string; distance: string; link: string }> = [
+    {
+        name: "Towner Eastbourne",
+        price: "£",
+        distance: "14 min walk",
+        link: "www.townereastbourne.org.uk",
+    },
+    {
+        name: "Emma Mason Gallery",
+        price: "£",
+        distance: "13 min walk",
+        link: "www.emmamason.co.uk",
+    },
+    {
+        name: "Congress Theatre",
+        price: "££",
+        distance: "14 min walk",
+        link: "www.eastbournetheatres.co.uk",
+    },
+];
+
+const F_AND_B_DESTINATIONS: Array<{ name: string; price: string; distance: string; link: string }> = [
+    {
+        name: "The Grand Hotel's Mirabelle Restaurant",
+        price: "£££",
+        distance: "15 min walk",
+        link: "www.grandeastbourne.com/mirabelle-restaurant",
+    },
+    {
+        name: "The Pilot Inn",
+        price: "££",
+        distance: "35 min walk",
+        link: "www.pilot-inn.co.uk",
+    },
+    {
+        name: "The Dolphin",
+        price: "£",
+        distance: "14 min walk",
+        link: "share.google/2LIMIubNu838NYNCt",
+    },
+    {
+        name: "Nelson Coffee Roastery",
+        price: "££",
+        distance: "22 min walk",
+        link: "www.nelsoncoffee.co.uk",
+    },
+    {
+        name: "Skylark",
+        price: "££",
+        distance: "16 min walk",
+        link: "www.skylarkeastbourne.co.uk",
+    },
+];
+
 
 export default function LocalDirectory(): JSX.Element {
-  // State
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [typingComplete, setTypingComplete] = useState(false);
-  const listingsRef = useRef<HTMLDivElement>(null);
+    const [elementInView, setElementInView] = useState(false)
+    const [displayCat, setDisplayCat] = useState('Main Menu')
 
-  const categoriesText = "Categories";
+    useEffect(() => {
+        if (typeof window === "undefined") return;
 
-  // State for the typing animation
-  const [typedText, setTypedText] = useState("");
-  const [typingIndex, setTypingIndex] = useState(0);
+        const element = document.getElementById("local-directory");
+        if (!element) return;
 
-  // Typing animation effect
-  useEffect(() => {
-    if (typingIndex < categoriesText.length) {
-      const timeout = setTimeout(() => {
-        setTypedText(prev => prev + categoriesText[typingIndex]);
-        setTypingIndex(prev => prev + 1);
-      }, 100);
+        // Create an observer with a threshold of 0.5 (50% visible)
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        setElementInView(true);
 
-      return () => clearTimeout(timeout);
-    } else {
-      setTypingComplete(true);
-    }
-  }, [typingIndex, categoriesText]);
+                    } else if (entry.intersectionRatio === 0) {
+                        setElementInView(false);
+                    }
+                });
+            },
+            {
+                threshold: [0, 0.5], // trigger when fully out or 50% in view
+            }
+        );
 
-  // Directory data - moved to a separate file or hook in a real application
-  const categories: Category[] = [
-    {
-      id: "restaurants",
-      title: "Restaurants, Pubs, And Bars",
-      items: [
-        {
-          id: "mirabelle-restaurant",
-          title: "The Grand Hotel's Mirabelle Restaurant",
-          image: "Mirabelle",
-          walkingDistance: "10 min",
-          recommendation: "Seasonal tasting menu",
-          dates: "Open for dinner Tue-Sat, 6:30pm-9:30pm",
-          pricePoint: 3,
-          description: "An elegant fine dining experience offering a menu that blends classic and contemporary dishes, emphasizing locally sourced ingredients.",
-          address: "King Edwards Parade, Eastbourne BN21 4EQ",
-          phone: "01323 412345",
-          website: "www.grandeastbourne.com/dining/mirabelle-restaurant"
-        },
-        {
-          id: "pilot-inn",
-          title: "The Pilot Inn",
-          image: "Pilot",
-          walkingDistance: "20 min",
-          recommendation: "Fresh seafood platters",
-          dates: "Open daily, 11am-11pm",
-          pricePoint: 2,
-          description: "A traditional pub known for its warm atmosphere and a menu featuring classic British dishes and seafood specialties.",
-          address: "89 Meads Street, Eastbourne BN20 7RW",
-          phone: "01323 723440",
-          website: "www.pilot-inn.co.uk"
-        },
-        {
-          id: "dolphin",
-          title: "The Dolphin",
-          image: "Dolphin",
-          walkingDistance: "8 min",
-          recommendation: "Sunday roast and local ales",
-          dates: "Mon-Sun, 11am-11pm",
-          pricePoint: 1,
-          description: "A popular pub offering a range of real ales and a menu of hearty meals, with a focus on fresh, local produce.",
-          address: "14 South Street, Eastbourne BN21 4XF",
-          phone: "01323 722733",
-          website: "www.dolphineastbourne.co.uk"
-        }
-      ]
-    },
-    {
-      id: "culture",
-      title: "Art & Culture",
-      items: [
-        {
-          id: "towner-eastbourne",
-          title: "Towner Eastbourne",
-          image: "Towner",
-          walkingDistance: "15 min",
-          recommendation: "Turner Prize exhibitions",
-          dates: "Tue-Sun, 10am-5pm, Closed Mondays",
-          pricePoint: 1,
-          description: "A Modernist marvel painted in bold geometric rainbow colours by German artist Loether Götz, hosting the Turner Prize as part of its centenary celebrations with consistently top-drawer exhibitions.",
-          address: "Devonshire Park, College Road, Eastbourne BN21 4JJ",
-          phone: "01323 434670",
-          website: "www.townereastbourne.org.uk"
-        },
-        {
-          id: "emma-mason-gallery",
-          title: "Emma Mason Gallery",
-          image: "Analogue",
-          walkingDistance: "12 min",
-          recommendation: "British printmakers from the 1950s onwards",
-          dates: "Wed-Sat, 10am-5pm",
-          pricePoint: 1,
-          description: "Small but excellent gallery showcasing work by artist printmakers working in Britain from the 1950s onwards, with a carefully curated collection of fine art prints.",
-          address: "3 Cornfield Terrace, Eastbourne BN21 4NN",
-          phone: "01323 726927",
-          website: "www.emmamason.co.uk"
-        },
-        {
-          id: "congress-theatre",
-          title: "Congress Theatre",
-          image: "CongressTheatre",
-          walkingDistance: "14 min",
-          recommendation: "London Philharmonic performances",
-          dates: "Check website for performances",
-          pricePoint: 2,
-          description: "The only place outside London to see the London Philharmonic perform, this Grade II listed theater is part of Eastbourne's cultural quarter and hosts a variety of performances.",
-          address: "Carlisle Road, Eastbourne BN21 4BP",
-          phone: "01323 412000",
-          website: "www.eastbournetheatres.co.uk"
-        }
-      ]
-    },
-    {
-      id: "walks",
-      title: "Walks & Activities",
-      items: [
-        {
-          id: "seven-sisters",
-          title: "Seven Sisters Country Park",
-          image: "SevenSisters",
-          walkingDistance: "Bus journey required",
-          recommendation: "Spectacular cliff-top walks",
-          dates: "Open year-round, visitor center hours vary",
-          pricePoint: 1,
-          description: "Recently named one of the most beautiful places in the world by Conde Nast Traveller, offering stunning white cliffs, meandering river valley and open downland with breathtaking views.",
-          address: "East Dean Road, Seaford BN25 4AD",
-          website: "www.sevensisters.org.uk"
-        },
-        {
-          id: "eastbourne-pier",
-          title: "Eastbourne Pier",
-          image: "pier",
-          walkingDistance: "2 min",
-          recommendation: "Victorian tea room experience",
-          dates: "Open daily, hours vary seasonally",
-          pricePoint: 1,
-          description: "A historic pier featuring amusements, dining, and panoramic sea views, perfect for a leisurely stroll.",
-          address: "Grand Parade, Eastbourne BN21 3EL",
-          website: "www.eastbournepier.com"
-        },
-        {
-          id: "coastal-culture-trail",
-          title: "Coastal Culture Trail",
-          image: "CostalTrail",
-          walkingDistance: "Starts at Towner Gallery",
-          recommendation: "Cycle to De La Warr Pavilion",
-          dates: "Accessible year-round",
-          pricePoint: 1,
-          description: "An unbroken stretch of cycle route linking Eastbourne with De La Warr Pavilion in Bexhill and Hastings Contemporary further along, perfect for art enthusiasts and cyclists alike.",
-          website: "www.coastalculturetrail.com"
-        },
-        {
-          id: "water-activities",
-          title: "Kayak & Paddleboard Hire",
-          image: "Kayak",
-          walkingDistance: "5 min",
-          recommendation: "Kayak tour from Wish Tower",
-          dates: "April-October, weather permitting",
-          pricePoint: 2,
-          description: "Hire a kayak from Wish Tower to explore Eastbourne from the sea, or try paddleboarding along the stunning coastline for a unique perspective of the cliffs and beaches.",
-          address: "Wish Tower, King Edwards Parade",
-          website: "www.eastbournekayakhire.com"
-        }
-      ]
-    },
-    {
-      id: "shopping",
-      title: "Shopping",
-      items: [
-        {
-          id: "camillas-bookshop",
-          title: "Camilla's Bookshop",
-          image: "Camillas",
-          walkingDistance: "10 min",
-          recommendation: "Rare and secondhand books",
-          dates: "Mon-Sat, 9:30am-5pm",
-          pricePoint: 1,
-          description: "A legendary bookshop with three floors piled high with second hand, rare and antique books. There's also a parrot hiding in there somewhere amongst the paperbacks.",
-          address: "13 Grove Road, Eastbourne BN21 4TT",
-          phone: "01323 728787",
-          website: "www.camillasbooks.co.uk"
-        },
-        {
-          id: "all-things-analogue",
-          title: "All Things Analogue",
-          image: "Analogue",
-          walkingDistance: "11 min",
-          recommendation: "Beautiful stationery collections",
-          dates: "Tue-Sat, 10am-5pm",
-          pricePoint: 2,
-          description: "Heaven for fans of beautiful stationery, this shop offers a carefully curated selection of notebooks, cards, pens and other analogue delights.",
-          address: "14 Grove Road, Eastbourne BN21 4TT",
-          website: "www.allthingsanalogue.co.uk"
-        },
-        {
-          id: "little-chelsea",
-          title: "Little Chelsea",
-          image: "Chelsea",
-          walkingDistance: "7 min",
-          recommendation: "Independent boutiques and cafes",
-          dates: "Individual shop hours vary",
-          pricePoint: 2,
-          description: "A charming area known for its independent shops, boutiques, and antique stores, centered around Grove Road and South Street.",
-          address: "Grove Road & South Street, Eastbourne BN21"
-        },
-        {
-          id: "barley-sugar",
-          title: "Barley Sugar",
-          image: "BarleySugar",
-          walkingDistance: "8 min",
-          recommendation: "Local Sussex produce",
-          dates: "Tue-Sat, 9am-5pm",
-          pricePoint: 2,
-          description: "The place to stock up your pantry with top quality local produce from Sussex, including artisanal foods, wines, and specialty ingredients.",
-          address: "18 Grove Road, Eastbourne BN21 4TT",
-          phone: "01323 737477",
-          website: "www.barleysugar.co.uk"
-        }
-      ]
-    },
-    {
-      id: "coffee",
-      title: "Coffee & Cafes",
-      items: [
-        {
-          id: "nelson-coffee",
-          title: "Nelson Coffee Roastery",
-          image: "Nelson",
-          walkingDistance: "10 min",
-          recommendation: "Specialty coffee and brunch",
-          dates: "Mon-Sat, 8am-4pm, Sun 9am-3pm",
-          pricePoint: 2,
-          description: "Near the station, this shop serves high-grade, seasonal and ethical coffee with a great brunch menu in a relaxed, contemporary setting.",
-          address: "4 Terminus Road, Eastbourne BN21 3LP",
-          website: "www.nelsoncoffee.co.uk"
-        },
-        {
-          id: "urban-ground",
-          title: "Urban Ground Coffee",
-          image: "Urban",
-          walkingDistance: "7 min",
-          recommendation: "Artisan coffee and homemade cakes",
-          dates: "Mon-Sat, 8am-5pm, Sun 9am-4pm",
-          pricePoint: 1,
-          description: "With two locations in central Eastbourne, Urban Ground makes excellent coffee to take away or enjoy with a relaxed brunch in their stylish cafes.",
-          address: "12 Bolton Road, Eastbourne BN21 3JX",
-          phone: "01323 301778",
-          website: "www.urbanground.co.uk"
-        },
-        {
-          id: "skylark",
-          title: "Skylark",
-          image: "Skylark",
-          walkingDistance: "9 min",
-          recommendation: "Brunch in secret courtyard",
-          dates: "Tue-Sun, 9am-3pm",
-          pricePoint: 2,
-          description: "A chic, unfussy independent cafe with a pretty secret courtyard for warmer days, serving excellent brunch, lunch and neighborhood dining.",
-          address: "44-46 Grove Road, Eastbourne BN21 4TT",
-          phone: "01323 765431",
-          website: "www.skylarkcafe.co.uk"
-        },
-        {
-          id: "doc-coffee",
-          title: "DOC Coffee",
-          image: "DOC",
-          walkingDistance: "8 min",
-          recommendation: "Single-origin coffees",
-          dates: "Mon-Sat, 8:30am-4:30pm",
-          pricePoint: 1,
-          description: "Located in Eastbourne's vibrant Little Chelsea area, DOC Coffee is an ideal place to while away an afternoon of people watching and flipping through arty magazines.",
-          address: "10 South Street, Eastbourne BN21 4XF",
-          website: "www.doccoffee.co.uk"
-        }
-      ]
-    },
-    {
-      id: "events",
-      title: "Events",
-      items: [
-        {
-          id: "airbourne",
-          title: "Eastbourne International Airshow (Airbourne)",
-          image: "Airbourne",
-          walkingDistance: "5 min to viewing area",
-          recommendation: "Red Arrows displays",
-          dates: "Typically held in August",
-          pricePoint: 1,
-          description: "An annual airshow featuring impressive aerial displays, ground exhibitions, and entertainment along the seafront.",
-          website: "www.eastbourneairshow.com"
-        },
-        {
-          id: "tennis-tournament",
-          title: "Eastbourne International Tennis Tournament",
-          image: "Tennis",
-          walkingDistance: "15 min",
-          recommendation: "Center court matches",
-          dates: "Held annually in June",
-          pricePoint: 2,
-          description: "A prestigious tennis event attracting top players, serving as a warm-up for Wimbledon.",
-          address: "Devonshire Park, College Road, Eastbourne",
-          website: "www.lta.org.uk"
-        },
-        {
-          id: "towner-centenary",
-          title: "Towner 100: Centenary Celebrations",
-          image: "Towner2",
-          walkingDistance: "15 min",
-          recommendation: "Turner Prize exhibition",
-          dates: "Throughout 2023",
-          pricePoint: 1,
-          description: "A year-long programme of special exhibitions and events celebrating Towner Eastbourne's 100th anniversary, including hosting the prestigious Turner Prize.",
-          address: "Devonshire Park, College Road, Eastbourne BN21 4JJ",
-          website: "www.townereastbourne.org.uk/towner-100"
-        }
-      ]
-    }
-  ];
-  
-  // Handler to select a category
-  const handleCategoryClick = (categoryId: string) => {
-    if (isAnimating) return;
+        observer.observe(element);
 
-    setIsAnimating(true);
+        // Cleanup
+        return () => {
+            if (element) observer.unobserve(element);
+        };
+    }, []);
 
-    if (activeCategory === categoryId) {
-      setActiveCategory(null);
-    } else {
-      setActiveCategory(categoryId);
-    }
 
-    // Scroll to listings if switching categories
-    setTimeout(() => {
-      if (listingsRef.current && categoryId !== activeCategory) {
-        listingsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-      setIsAnimating(false);
-    }, 500);
-  };
 
-  // Get price point display
-  const getPriceDisplay = (pricePoint: number): string => {
-    return '£'.repeat(pricePoint);
-  };
-
-  // Get active category data
-  const activeCategoryData = activeCategory
-    ? categories.find(cat => cat.id === activeCategory)
-    : null;
-
-  return (
-    <section className="w-full pb-20">
-      <div className="flex flex-col gap-2 mb-10 items-center">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <Lead className="font-[--font-shippori-serif] uppercase tracking-widest">Pier Lookout</Lead>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <Subheading className="font-[--font-shippori-serif] uppercase tracking-widest">Local Directory</Subheading>
-        </motion.div>
-
-        <motion.div
-          className="w-full max-w-[80vw] mx-auto flex items-center justify-center gap-3 relative overflow-clip"
-          initial={{ opacity: 1 }}
-          animate={{ opacity: 1 }}
-        >
-          <motion.div
-            className="w-full h-px bg-stone-700 shrink-0 origin-right"
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: typingComplete ? 1 : 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-          ></motion.div>
-
-          <Lead className="whitespace-nowrap flex-nowrap uppercase min-w-[120px]">
-            {typedText}
-          </Lead>
-
-          <motion.div
-            className="w-full h-px bg-stone-700 shrink-0 origin-left"
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: typingComplete ? 1 : 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-          ></motion.div>
-        </motion.div>
-
-        <motion.div
-          className="w-[90vw] md:w-[70vw] lg:w-[60vw] flex flex-wrap gap-y-4 gap-x-6 md:gap-x-10 items-center justify-center py-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: typingComplete ? 1 : 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          {categories.map((category, index) => (
-            <motion.div
-              key={category.id}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.4, delay: 0.7 + index * 0.1 }}
-              className="relative"
+    return (
+        <section className="w-full pb-16 h-[90vh] p-[5vw] relative" id="local-directory">
+            <div className="relative h-full w-full max-w-[6xl] flex items-center justify-center flex-col gap-3"
+                style={{
+                    backgroundImage: "url('/cardtexture.webp')",
+                    backgroundColor: "rgba(225,225,225,1)",
+                    backgroundSize: '20%',
+                    backgroundPosition: 'center',
+                    backgroundBlendMode: 'overlay',
+                }}
             >
-              <button
-                onClick={() => handleCategoryClick(category.id)}
-                className="cursor-pointer bg-transparent border-0 p-0 m-0"
-                aria-label={`Show ${category.title}`}
-              >
-                <Lead
-                  className={`${activeCategory === category.id ? 'opacity-100 underline' : 'opacity-60'} hover:opacity-100 font-[--font-shippori-serif] hover:underline transition-all duration-100 ease-in-out`}
+                <motion.div
+                    className="w-full h-full flex flex-col items-center justify-center gap-3 absolute top-0 left-0"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: displayCat == 'Main Menu' ? 1 : 0 }}
+                    transition={{ duration: 0.1 }}
+                    style={{ pointerEvents: displayCat == 'Main Menu' ? 'auto' : 'none' }}
                 >
-                  {category.title}
-                </Lead>
-              </button>
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
+                    <div className="mix-blend-hard-light opacity-70 font-extralight bg-transparent bg-blend-hard-light text-black text-2xl relative"
+                        style={{ fontFamily: "var(--font-goudy-serif)" }}
+                    >
+                        {"Local Directory".split('').map((char, index) => (
+                            <motion.span
+                                key={index}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: elementInView ? 1 : 0 }}
+                                transition={{ delay: elementInView ? index * 0.1 : 0, duration: 0 }}
+                                style={{ display: 'inline-block' }}
 
-      {/* Listings Section */}
-      <div ref={listingsRef} className="w-full max-w-6xl mx-auto">
-        <AnimatePresence mode="wait">
-          {activeCategoryData && (
-            <motion.div
-              key={activeCategoryData.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5 }}
-              className="flex flex-col gap-6 px-4 md:px-8"
+                            >
+                                {char === ' ' ? '\u00A0' : char}
+                            </motion.span>
+                        ))}
+                    </div>
+                    <div className="mix-blend-hard-light opacity-70 font-extralight bg-transparent bg-blend-hard-light text-black md:text-lg text-md relative cursor-pointer flex flex-row landscape:w-[70%] portrait:w-[90%] lg:gap-5 lg:gap-y-2 gap-3 flex-wrap items-center justify-center"
+                        style={{ fontFamily: "var(--font-goudy-serif)" }}
+                    >
+                        {
+                            [
+                                'Restaurants, Pubs, and Cafés',
+                                'Arts & Culture',
+                                'Activities, Sport, and Events'
+                            ].map(
+                                (cat, index) =>
+                                    <motion.div
+                                        className="w-fit max-w-full h-fit relative text-black group text-center"
+                                        key={index}
+                                        animate={{ cursor: elementInView ? 'pointer' : 'default' }}
+                                        transition={{ delay: elementInView ? 1.6 : 0 }}
+                                    >
+                                        <motion.button
+                                            type="button"
+                                            tabIndex={0}
+                                            className="focus:outline-none focus-visible:ring-1 focus-visible:ring-black"
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: elementInView ? 1 : 0 }}
+                                            transition={{ delay: elementInView ? 1.6 : 0, duration: 1 }}
+                                            onClick={() => setDisplayCat(cat)}
+                                        >
+                                            {cat}
+                                        </motion.button>
+                                        <motion.div
+                                            className="absolute -bottom-0.5 w-0 h-[0.5px] bg-black group-hover:w-full duration-75"
+                                            animate={{ backgroundColor: elementInView ? 'black' : 'transparent' }}
+                                            transition={{ delay: elementInView ? 1.6 : 0 }}
+                                        />
+                                    </motion.div>
+                            )
+                        }
+                    </div>
+                </motion.div>
+                <FAndBSection display={displayCat == 'Restaurants, Pubs, and Cafés' && elementInView} selectCat={setDisplayCat} />
+                <ArtAndCultureSection display={displayCat == 'Arts & Culture' && elementInView} selectCat={setDisplayCat} />
+                <ActivitiesSportsEventsSection display={displayCat == 'Activities, Sport, and Events' && elementInView} selectCat={setDisplayCat} />
+            </div>
+        </section >
+    )
+}
+
+
+const FAndBSection = ({ display, selectCat }: { display: boolean, selectCat: (cat: string) => void }) => {
+
+
+    return (
+        <motion.div
+            className="w-full h-full flex flex-col items-center justify-center gap-3 absolute top-0 left-0 py-[1em]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: display ? 1 : 0 }}
+            transition={{ duration: 0.1 }}
+            style={{ pointerEvents: display ? 'auto' : 'none' }}
+        >
+            <div className="mix-blend-hard-light opacity-70 font-extralight bg-transparent bg-blend-hard-light text-black text-md md:text-lg lg:text-2xl relative"
+                style={{ fontFamily: "var(--font-goudy-serif)" }}
             >
-              <motion.div
-                className="flex items-center justify-center gap-3"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
-              >
-                <div className="w-full h-px bg-stone-300"></div>
-                <Lead className="whitespace-nowrap uppercase font-[--font-shippori-serif] tracking-widest">
-                  {activeCategoryData.title}
-                </Lead>
-                <div className="w-full h-px bg-stone-300"></div>
-              </motion.div>
-
-              <div className="grid grid-cols-1 gap-10">
-                {activeCategoryData.items.map((item, index) => (
-                  <motion.div
-                    key={item.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: 0.3 + index * 0.1 }}
-                    className="flex flex-col md:flex-row gap-6 text-left border-b border-stone-200 pb-10"
-                  >
-                    {/* Image */}
-                    <div className="w-full md:w-1/3 h-64 md:h-auto relative">
-                      <OptimizedImage
-                        path={item.image}
-                        alt={item.title}
-                        className="w-full h-full object-cover"
-                        quality={85}
-                      />
-                    </div>
-
-                    {/* Content */}
-                    <div className="w-full md:w-2/3 flex flex-col">
-                      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
-                        <h3 className="text-xl font-[--font-shippori-serif] text-stone-800">{item.title}</h3>
-                        <div className="flex items-center gap-2">
-                          <Small className="text-stone-600 font-[--font-shippori-serif]">{getPriceDisplay(item.pricePoint)}</Small>
-                        </div>
-                      </div>
-
-                      <p className="text-stone-600 mb-4 italic">{item.description}</p>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-4 mb-4">
-                        <div className="flex items-center gap-2">
-                          <Small className="text-stone-500 uppercase tracking-wide">Walking:</Small>
-                          <Small className="text-stone-700">{item.walkingDistance}</Small>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <Small className="text-stone-500 uppercase tracking-wide">Recommend:</Small>
-                          <Small className="text-stone-700">{item.recommendation}</Small>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <Small className="text-stone-500 uppercase tracking-wide">When:</Small>
-                          <Small className="text-stone-700">{item.dates}</Small>
-                        </div>
-
-                        {item.address && (
-                          <div className="flex items-center gap-2">
-                            <Small className="text-stone-500 uppercase tracking-wide">Address:</Small>
-                            <Small className="text-stone-700">{item.address}</Small>
-                          </div>
-                        )}
-
-                        {item.phone && (
-                          <div className="flex items-center gap-2">
-                            <Small className="text-stone-500 uppercase tracking-wide">Phone:</Small>
-                            <Small className="text-stone-700">{item.phone}</Small>
-                          </div>
-                        )}
-
-                        {item.website && (
-                          <div className="flex items-center gap-2">
-                            <Small className="text-stone-500 uppercase tracking-wide">Website:</Small>
-                            <Link href={`https://${item.website}`} target="_blank" rel="noopener noreferrer" className="text-stone-700 hover:text-blue-700 underline transition-colors">
-                              <Small>
-                                {item.website}
-                              </Small>
-                            </Link>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </motion.div>
+                {"Restaurants, Pubs, and Cafés".split('').map((char, index) => (
+                    <motion.span
+                        key={index}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: display ? 1 : 0 }}
+                        transition={{ delay: display ? index * 0.1 : 0, duration: 0 }}
+                        style={{ display: 'inline-block' }}
+                    >
+                        {char === ' ' ? '\u00A0' : char}
+                    </motion.span>
                 ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </section>
-  );
+            </div>
+            <div className="w-full px-[10%] mix-blend-hard-light opacity-70 font-extralight bg-transparent bg-blend-hard-light text-black text-sm md:text-md relative max-h-full overflow-y-scroll overflow-x-clip">
+                <div style={{ fontFamily: "var(--font-goudy-serif)", display: "grid" }} className="grid-cols-[auto_auto] sm:grid-cols-[1fr_auto_auto] sm:gap-[1rem] md:grid-cols-[auto_1fr_auto_auto] w-full">
+                    {F_AND_B_DESTINATIONS.map((dest, i) => (
+                        <React.Fragment key={i}>
+                            {/* Theres 4 attributes so the key = `attr-${j}` */}
+                            {/* Index */}
+                            <motion.span
+                                key={`index-${i}`}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: display ? 1 : 0 }}
+                                transition={{ delay: display ? 2 + i * 0.1 : 0, duration: 0 }}
+                                className="hidden md:inline-block"
+                                style={{ width: '2ch' }}
+                            >
+                                {i + 1}.
+                            </motion.span>
+                            {/* Name */}
+                            <motion.a
+                                key={`name-${i}`}
+                                href={`https://${dest.link}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="underline underline-offset-2 hover:text-blue-600 col-span-2 sm:col-span-1 mb-[0.25rem] sm:mb-0"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: display ? 1 : 0 }}
+                                transition={{ delay: display ? 2 + i * 0.1 + 0.05 : 0, duration: 0 }}
+                                style={{ display: 'inline-block', maxWidth: '60ch' }}
+                            >
+                                <span className="md:hidden">
+                                    {i + 1}.&nbsp;
+                                </span>
+                                {dest.name}
+                            </motion.a>
+                            {/* Distance */}
+                            <motion.span
+                                key={`distance-${i}`}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: display ? 1 : 0 }}
+                                transition={{ delay: display ? 2 + i * 0.1 + 0.15 : 0, duration: 0 }}
+                                style={{ display: 'inline-block', width: '12ch' }}
+                                className="mb-[1rem] sm:mb-0 w-full"
+                            >
+                                {dest.distance}
+                            </motion.span>
+                            {/* Price */}
+                            <motion.span
+                                key={`price-${i}`}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: display ? 1 : 0 }}
+                                transition={{ delay: display ? 2 + i * 0.1 + 0.1 : 0, duration: 0 }}
+                                style={{ display: 'inline-block' }}
+                                className="text-right w-full"
+                            >
+                                {dest.price}
+                            </motion.span>
+                        </React.Fragment>
+                    ))}
+                </div>
+            </div>
+            <div
+                className="w-full flex flex-col items-end gap-[0.2rem] md:flex-row md:items-center md:justify-between px-[10%] mt-[1rem]"
+                style={{ fontFamily: "var(--font-goudy-serif)" }}
+            >
+                {
+                    [
+                        'Activities, Sport, and Events',
+                        'Main Menu',
+                        'Arts & Culture'
+                    ].map(
+                        (cat, index) =>
+                            <motion.div
+                                className={`w-full h-fit relative  text-gray-800 group text-sm md:text-md ${index == 0 ? 'md:text-start' : index == 1 ? 'md:text-center' : 'md:text-end'}`}
+                                key={index}
+                                animate={{ cursor: display ? 'pointer' : 'default' }}
+                                transition={{ delay: display ? 1.6 : 0 }}
+                            >
+                                <motion.span
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: display ? 1 : 0 }}
+                                    transition={{ delay: display ? 1.6 : 0, duration: 1 }}
+                                    onClick={() => {
+                                        selectCat(cat)
+                                    }}
+                                    className="relative px-1"
+                                >
+                                    {cat}
+                                    <motion.div className="absolute -bottom-0.5 w-0 h-[0.5px] text-gray-800 group-hover:w-full duration-75 left-0"
+                                        animate={{ backgroundColor: display ? 'black' : 'transparent' }}
+                                        transition={{ delay: display ? 1.6 : 0 }}
+                                    />
+                                </motion.span>
+
+
+                            </motion.div>
+                    )
+                }
+            </div>
+        </motion.div>
+    )
+}
+
+
+
+const ArtAndCultureSection = ({ display, selectCat }: { display: boolean, selectCat: (cat: string) => void }) => {
+
+
+    return (
+        <motion.div
+            className="w-full h-full flex flex-col items-center justify-center gap-3 absolute top-0 left-0 py-[1em]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: display ? 1 : 0 }}
+            transition={{ duration: 0.1 }}
+            style={{ pointerEvents: display ? 'auto' : 'none' }}
+        >
+            <div className="mix-blend-hard-light opacity-70 font-extralight bg-transparent bg-blend-hard-light text-black text-md md:text-lg lg:text-2xl relative"
+                style={{ fontFamily: "var(--font-goudy-serif)" }}
+            >
+                {"Arts & Culture".split('').map((char, index) => (
+                    <motion.span
+                        key={index}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: display ? 1 : 0 }}
+                        transition={{ delay: display ? index * 0.1 : 0, duration: 0 }}
+                        style={{ display: 'inline-block' }}
+                    >
+                        {char === ' ' ? '\u00A0' : char}
+                    </motion.span>
+                ))}
+            </div>
+            <div className="w-full px-[10%] mix-blend-hard-light opacity-70 font-extralight bg-transparent bg-blend-hard-light text-black text-sm md:text-md relative max-h-full overflow-y-scroll overflow-x-clip">
+                <div style={{ fontFamily: "var(--font-goudy-serif)", display: "grid" }} className="grid-cols-[auto_auto] sm:grid-cols-[1fr_auto_auto] sm:gap-[1rem] md:grid-cols-[auto_1fr_auto_auto] w-full">
+                    {CULTURE_DESTINATIONS.map((dest, i) => (
+                        <React.Fragment key={i}>
+                            {/* Theres 4 attributes so the key = `attr-${j}` */}
+                            {/* Index */}
+                            <motion.span
+                                key={`index-${i}`}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: display ? 1 : 0 }}
+                                transition={{ delay: display ? 2 + i * 0.1 : 0, duration: 0 }}
+                                className="hidden md:inline-block"
+                                style={{ width: '2ch' }}
+                            >
+                                {i + 1}.
+                            </motion.span>
+                            {/* Name */}
+                            <motion.a
+                                key={`name-${i}`}
+                                href={`https://${dest.link}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="underline underline-offset-2 hover:text-blue-600 col-span-2 sm:col-span-1 mb-[0.25rem] sm:mb-0"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: display ? 1 : 0 }}
+                                transition={{ delay: display ? 2 + i * 0.1 + 0.05 : 0, duration: 0 }}
+                                style={{ display: 'inline-block', maxWidth: '60ch' }}
+                            >
+                                <span className="md:hidden">
+                                    {i + 1}.&nbsp;
+                                </span>
+                                {dest.name}
+                            </motion.a>
+                            {/* Distance */}
+                            <motion.span
+                                key={`distance-${i}`}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: display ? 1 : 0 }}
+                                transition={{ delay: display ? 2 + i * 0.1 + 0.15 : 0, duration: 0 }}
+                                style={{ display: 'inline-block', width: '12ch' }}
+                                className="mb-[1rem] sm:mb-0 w-full"
+                            >
+                                {dest.distance}
+                            </motion.span>
+                            {/* Price */}
+                            <motion.span
+                                key={`price-${i}`}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: display ? 1 : 0 }}
+                                transition={{ delay: display ? 2 + i * 0.1 + 0.1 : 0, duration: 0 }}
+                                style={{ display: 'inline-block' }}
+                                className="text-right w-full"
+                            >
+                                {dest.price}
+                            </motion.span>
+                        </React.Fragment>
+                    ))}
+                </div>
+            </div>
+            <div
+                className="w-full flex flex-col items-end gap-[0.2rem] md:flex-row md:items-center md:justify-between px-[10%] mt-[1rem]"
+                style={{ fontFamily: "var(--font-goudy-serif)" }}
+            >
+                {
+                    [
+                        'Restaurants, Pubs, and Cafés',
+                        'Main Menu',
+                        'Activities, Sport, and Events'
+                    ].map(
+                        (cat, index) =>
+                            <motion.div
+                                className={`w-full h-fit relative  text-gray-800 group text-sm md:text-md ${index == 0 ? 'md:text-start' : index == 1 ? 'md:text-center' : 'md:text-end'}`}
+                                key={index}
+                                animate={{ cursor: display ? 'pointer' : 'default' }}
+                                transition={{ delay: display ? 1.6 : 0 }}
+                            >
+                                <motion.span
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: display ? 1 : 0 }}
+                                    transition={{ delay: display ? 1.6 : 0, duration: 1 }}
+                                    onClick={() => {
+                                        selectCat(cat)
+                                    }}
+                                    className="relative px-1"
+                                >
+                                    {cat}
+                                    <motion.div className="absolute -bottom-0.5 w-0 h-[0.5px] text-gray-800 group-hover:w-full duration-75 left-0"
+                                        animate={{ backgroundColor: display ? 'black' : 'transparent' }}
+                                        transition={{ delay: display ? 1.6 : 0 }}
+                                    />
+                                </motion.span>
+
+
+                            </motion.div>
+                    )
+                }
+            </div>
+        </motion.div>
+    )
+}
+
+
+
+const ActivitiesSportsEventsSection = ({ display, selectCat }: { display: boolean, selectCat: (cat: string) => void }) => {
+    return (
+        <motion.div
+            className="w-full h-full flex flex-col items-center justify-center gap-3 absolute top-0 left-0 py-[1em]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: display ? 1 : 0 }}
+            transition={{ duration: 0.1 }}
+            style={{ pointerEvents: display ? 'auto' : 'none' }}
+        >
+            <div className="mix-blend-hard-light opacity-70 font-extralight bg-transparent bg-blend-hard-light text-black text-md md:text-lg lg:text-2xl relative"
+                style={{ fontFamily: "var(--font-goudy-serif)" }}
+            >
+                {"Activities, Sport, and Events".split('').map((char, index) => (
+                    <motion.span
+                        key={index}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: display ? 1 : 0 }}
+                        transition={{ delay: display ? index * 0.1 : 0, duration: 0 }}
+                        style={{ display: 'inline-block' }}
+                    >
+                        {char === ' ' ? '\u00A0' : char}
+                    </motion.span>
+                ))}
+            </div>
+            <div className="w-full px-[10%] mix-blend-hard-light opacity-70 font-extralight bg-transparent bg-blend-hard-light text-black text-sm md:text-md relative max-h-full overflow-y-scroll overflow-x-clip">
+                <div style={{ fontFamily: "var(--font-goudy-serif)", display: "grid" }} className="grid-cols-[auto_auto] sm:grid-cols-[1fr_auto_auto] sm:gap-[1rem] md:grid-cols-[auto_1fr_auto_auto] w-full">
+                    {ASE_DESTINATIONS.map((dest, i) => (
+                        <React.Fragment key={i}>
+                            {/* Theres 4 attributes so the key = `attr-${j}` */}
+                            {/* Index */}
+                            <motion.span
+                                key={`index-${i}`}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: display ? 1 : 0 }}
+                                transition={{ delay: display ? 2 + i * 0.1 : 0, duration: 0 }}
+                                className="hidden md:inline-block"
+                                style={{ width: '2ch' }}
+                            >
+                                {i + 1}.
+                            </motion.span>
+                            {/* Name */}
+                            <motion.a
+                                key={`name-${i}`}
+                                href={`https://${dest.link}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="underline underline-offset-2 hover:text-blue-600 col-span-2 sm:col-span-1 mb-[0.25rem] sm:mb-0"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: display ? 1 : 0 }}
+                                transition={{ delay: display ? 2 + i * 0.1 + 0.05 : 0, duration: 0 }}
+                                style={{ display: 'inline-block', maxWidth: '60ch' }}
+                            >
+                                <span className="md:hidden">
+                                    {i + 1}.&nbsp;
+                                </span>
+                                {dest.name}
+                            </motion.a>
+                            {/* Distance */}
+                            <motion.span
+                                key={`distance-${i}`}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: display ? 1 : 0 }}
+                                transition={{ delay: display ? 2 + i * 0.1 + 0.15 : 0, duration: 0 }}
+                                style={{ display: 'inline-block' }}
+                                className="mb-[1rem] sm:mb-0 text-nowrap w-fit"
+                            >
+                                {dest.distance}
+                            </motion.span>
+                            {/* Price */}
+                            <motion.span
+                                key={`price-${i}`}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: display ? 1 : 0 }}
+                                transition={{ delay: display ? 2 + i * 0.1 + 0.1 : 0, duration: 0 }}
+                                style={{ display: 'inline-block' }}
+                                className="text-right w-full"
+                            >
+                                {dest.price}
+                            </motion.span>
+                        </React.Fragment>
+                    ))}
+                </div>
+            </div>
+            <div
+                className="w-full flex flex-col items-end gap-[0.2rem] md:flex-row md:items-center md:justify-between px-[10%] mt-[1rem]"
+                style={{ fontFamily: "var(--font-goudy-serif)" }}
+            >
+                {
+                    [
+                        'Arts & Culture',
+                        'Main Menu',
+                        'Restaurants, Pubs, and Cafés'
+                    ].map(
+                        (cat, index) =>
+                            <motion.div
+                                className={`w-full h-fit relative  text-gray-800 group text-sm md:text-md ${index == 0 ? 'md:text-start' : index == 1 ? 'md:text-center' : 'md:text-end'}`}
+                                key={index}
+                                animate={{ cursor: display ? 'pointer' : 'default' }}
+                                transition={{ delay: display ? 1.6 : 0 }}
+                            >
+                                <motion.span
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: display ? 1 : 0 }}
+                                    transition={{ delay: display ? 1.6 : 0, duration: 1 }}
+                                    onClick={() => {
+                                        selectCat(cat)
+                                    }}
+                                    className="relative px-1"
+                                >
+                                    {cat}
+                                    <motion.div className="absolute -bottom-0.5 w-0 h-[0.5px] text-gray-800 group-hover:w-full duration-75 left-0"
+                                        animate={{ backgroundColor: display ? 'black' : 'transparent' }}
+                                        transition={{ delay: display ? 1.6 : 0 }}
+                                    />
+                                </motion.span>
+
+
+                            </motion.div>
+                    )
+                }
+            </div>
+        </motion.div>
+    )
 }
