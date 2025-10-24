@@ -1,6 +1,7 @@
 // app/page.tsx
 import type { Metadata } from "next";
 import HomeClient from "./components/HomeClient";
+import { JSX } from "react";
 
 // --- Site Metadata (concise, polished tone) ---
 const BASE_URL =
