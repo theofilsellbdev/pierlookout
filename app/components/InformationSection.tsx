@@ -115,15 +115,19 @@ export default function InformationSection(): JSX.Element {
                     {/* Map */}
                     <div className="w-full h-64 mb-4">
                         <iframe
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2523.428485244599!2d0.29259789999999997!3d50.7676301!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47df73f3fbddbe3d%3A0xb4b23313b625e244!2sFlat%205%2C%20Miramar%20House%20East%2C%203%20Grand%20Parade%2C%20Eastbourne%20BN21%203EH!5e0!3m2!1sen!2suk!4v1761049455607!5m2!1sen!2suk"
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2523.428485244599!2d0.29259789999999997!3d50.7676301!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47df734f1ba16995%3A0x93d9b97d45aacbfb!2sPier%20Lookout!5e0!3m2!1sen!2suk!4v1761310935210!5m2!1sen!2suk&scrollwheel=false&zoom=15&disableDefaultUI=true"
                             width="600"
                             height="450"
-                            loading="lazy"
-                            className="w-full h-full"
+                            loading="eager"
+                            className="w-full h-full bg-[#f5f5f5]"
                             // disable moving the map
-                            style={{ border: 0, pointerEvents: "none" }}
+                            style={{ border: 0 }}
+                            allowFullScreen={false}
+                            referrerPolicy="no-referrer-when-downgrade"
+
                             // Add a button to open in Google Maps
                             title="Map to Pier Lookout"
+                            aria-label="Map to Pier Lookout apartment in Eastbourne"
                         />
                     </div>
                     <p className="text-[clamp(.65rem,2vw,1rem)] text-end">Flat 5, 3 Grand Parade<br />Eastbourne, East Sussex<br />BN21 3EH</p>
