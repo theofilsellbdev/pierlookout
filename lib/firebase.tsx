@@ -1,7 +1,7 @@
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getDownloadURL, getStorage, ref } from 'firebase/storage';
-import { getAnalytics, isSupported } from 'firebase/analytics';
+import { getAnalytics, isSupported, logEvent, type Analytics } from 'firebase/analytics';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_API_KEY,
@@ -28,11 +28,16 @@ const db = getFirestore(app);
 // Initialize Storage
 const storage = getStorage(app);
 
+let analytics: Analytics | null = null;
 
 // Initialize Analytics conditionally
-const analytics = typeof window !== 'undefined' 
-  ? isSupported().then(yes => yes ? getAnalytics(app) : null) 
-  : null;
+if (typeof window !== 'undefined') {
+  isSupported().then((supported) => {
+    if (supported) {
+      analytics = getAnalytics(app);
+    }
+  });
+}
 
 // Development warning
 if (process.env.NODE_ENV === 'development') {
@@ -52,4 +57,4 @@ export const getImageUrlWithCache = async (path: string) => {
   return `${url}&cache-control=public,max-age=31536000`;
 };
 
-export { app, db, storage, analytics, isLocalhost };
+export { app, db, storage, analytics, logEvent, isLocalhost };

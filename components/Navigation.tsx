@@ -1,27 +1,28 @@
-// Import OptimizedImage at the top
+"use client";
+
 import Link from "next/link";
-import React, { JSX, useState, useEffect } from "react";
+import React, { JSX, useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { trackEvent } from "@/lib/analytics";
 
 // --- Navbar Component (Updated navigationLinks) ---
 export function Navbar(): JSX.Element {
   const [navHeight, setNavHeight] = useState(0);
   const [scrolled, setScrolled] = useState(false);
-  const [finishedAnimation, setFinishedAnimation] = useState(false)
+  const [finishedAnimation, setFinishedAnimation] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 50) {
         setScrolled(true);
-      }
-      else if (window.scrollY < 10) {
+      } else if (window.scrollY < 10) {
         setScrolled(false);
       }
     };
 
     const handleResize = () => {
-      const navElement = document.querySelector('nav');
-      if (navElement) {
+      const navElement = document.querySelector("nav");
+      if (navElement instanceof HTMLElement) {
         setNavHeight(navElement.clientHeight);
       }
     };
@@ -37,73 +38,88 @@ export function Navbar(): JSX.Element {
     };
   }, []);
 
+  const handleNavBookClick = () => {
+    trackEvent("book_now_click", {
+      location: "navbar",
+      source: "nav_book_button",
+    });
+  };
+
   return (
     <div className="w-full h-fit">
-      {/*  Height adjuster to reposition other elements */}
+      {/* Height adjuster to reposition other elements */}
       <motion.div
         initial={{ height: "1rem" }}
         animate={{ height: navHeight }}
         transition={{ delay: 1, duration: 2 }}
-        className={`block bg-[#FAFCFC]`}
+        className="block bg-[#FAFCFC]"
       />
 
-      <motion.nav className="fixed top-0 left-0 z-100 flex flex-row justify-between items-center w-full h-fit py-[clamp(0.5rem,2vw,1rem)] px-[1rem]"
+      <motion.nav
+        className="fixed top-0 left-0 z-100 flex flex-row justify-between items-center w-full h-fit py-[clamp(0.5rem,2vw,1rem)] px-[1rem]"
         initial={{ backgroundColor: "rgba(250, 252, 252, 0)" }}
-        animate={{ backgroundColor: scrolled && finishedAnimation ? "rgba(250, 252, 252, 1)" : "rgba(250, 252, 252, 0)" }}
+        animate={{
+          backgroundColor:
+            scrolled && finishedAnimation
+              ? "rgba(250, 252, 252, 1)"
+              : "rgba(250, 252, 252, 0)",
+        }}
         transition={{ duration: 0.3 }}
       >
         <div
           className="w-fit h-fit text-black tracking-widest"
-          style={{ fontFamily: "var(--font-shippori-serif)", fontSize: "clamp(.5rem, 2vw, .8rem)" }}
+          style={{
+            fontFamily: "var(--font-shippori-serif)",
+            fontSize: "clamp(.5rem, 2vw, .8rem)",
+          }}
         >
-          {"PIER LOOKOUT".split('').map((char, index) => (
+          {"PIER LOOKOUT".split("").map((char, index) => (
             <motion.span
               key={index}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: (index * 0.1) + 7, duration: 0 }}
-              style={{ display: 'inline-block' }}
+              transition={{ delay: index * 0.1 + 7, duration: 0 }}
+              style={{ display: "inline-block" }}
               // Set finished animation when this animation begins
               onAnimationStart={() => {
                 if (index === 0) {
                   setTimeout(() => setFinishedAnimation(true), 7000);
                 }
               }}
-
-
             >
-              {char === ' ' ? '\u00A0' : char}
+              {char === " " ? "\u00A0" : char}
             </motion.span>
           ))}
         </div>
+
         <Link
           href="https://via.eviivo.com/PierLookoutBN21"
           className="w-fit h-fit text-black tracking-widest text-right relative group"
-          style={{ fontFamily: "var(--font-shippori-serif)", fontSize: "clamp(.5rem, 2vw, .8rem)" }}
+          style={{
+            fontFamily: "var(--font-shippori-serif)",
+            fontSize: "clamp(.5rem, 2vw, .8rem)",
+          }}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={handleNavBookClick}
         >
-          {"BOOK NOW".split('').map((char, index) => (
+          {"BOOK NOW".split("").map((char, index) => (
             <motion.span
               key={index}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: .8 - (index * 0.1) + 7, duration: 0 }}
-              style={{ display: 'inline-block' }}
-
+              transition={{ delay: 0.8 - index * 0.1 + 7, duration: 0 }}
+              style={{ display: "inline-block" }}
             >
-              {char === ' ' ? '\u00A0' : char}
+              {char === " " ? "\u00A0" : char}
             </motion.span>
           ))}
-          <div
-            className="absolute left-0 -bottom-1 w-full h-[1px] bg-black scale-x-0 group-hover:scale-x-100 origin-left transition-transform"
-          />
+          <div className="absolute left-0 -bottom-1 w-full h-[1px] bg-black scale-x-0 group-hover:scale-x-100 origin-left transition-transform" />
         </Link>
-
       </motion.nav>
     </div>
-  )
+  );
 }
-
-
 
 export function Footer(): JSX.Element {
   return (

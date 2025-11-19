@@ -1,91 +1,119 @@
-import React, { useState, useEffect, useRef } from 'react';
-import Image from 'next/image';
-import { ref, getDownloadURL } from 'firebase/storage';
-import { storage } from '@/lib/firebase';
+"use client";
+
+import React, { useState, useEffect, useRef } from "react";
+import Image from "next/image";
+import { ref, getDownloadURL } from "firebase/storage";
+import { storage } from "@/lib/firebase";
+import { trackEvent } from "@/lib/analytics";
 
 // Component Props
 interface OptimizedImageProps {
-  path: string;          // Path for static images (/static/[name].webp)
+  path: string; // Path for static images (/static/[name].webp)
 
   // Display options
-  width?: number | string;      // Width in px or %
-  height?: number | string;     // Height in px or %
-  className?: string;           // Custom classes
-  style?: React.CSSProperties;  // Inline styles
-  alt?: string;                 // Alt text for accessibility
-  title?: string;               // Title text (hover)
+  width?: number | string; // Width in px or %
+  height?: number | string; // Height in px or %
+  className?: string; // Custom classes
+  style?: React.CSSProperties; // Inline styles
+  alt?: string; // Alt text for accessibility
+  title?: string; // Title text (hover)
 
   // Loading behavior
-  priority?: boolean;           // Load with priority (no lazy loading)
-  quality?: number;             // Image quality (1-100)
-  loading?: 'lazy' | 'eager';   // Loading strategy
+  priority?: boolean; // Load with priority (no lazy loading)
+  quality?: number; // Image quality (1-100)
+  loading?: "lazy" | "eager"; // Loading strategy
 
   // Responsive options
-  sizes?: string;               // Sizes attribute for responsive images
-  objectFit?: 'fill' | 'contain' | 'cover' | 'none' | 'scale-down';
+  sizes?: string; // Sizes attribute for responsive images
+  objectFit?: "fill" | "contain" | "cover" | "none" | "scale-down";
 
   // Advanced options
-  unoptimized?: boolean;        // Skip Next.js image optimization (for SVGs, etc.)
+  unoptimized?: boolean; // Skip Next.js image optimization (for SVGs, etc.)
 
   // Callbacks
-  onLoad?: () => void;          // Called when image loads
+  onLoad?: () => void; // Called when image loads
   onError?: (error: Error) => void; // Called on error
 }
 
 // Loading states
-type LoadingState = 'loading' | 'loaded' | 'error';
+type LoadingState = "loading" | "loaded" | "error";
 
 const OptimizedImage: React.FC<OptimizedImageProps> = ({
   path,
   width,
   height,
-  className = '',
+  className = "",
   style = {},
-  alt = '',
+  alt = "",
   title,
   priority = false,
   quality = 80,
-  loading = 'lazy',
+  loading = "lazy",
   sizes,
-  objectFit = 'cover',
+  objectFit = "cover",
   onLoad,
   onError,
 }) => {
   // States
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [loadingState, setLoadingState] = useState<LoadingState>('loading');
+  const [loadingState, setLoadingState] = useState<LoadingState>("loading");
 
   // Refs
   const imgRef = useRef<HTMLImageElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
-  // Fetch image URL and metadata
+  // Fetch image URL from Firebase storage
   useEffect(() => {
     let isMounted = true;
 
     const fetchImage = async (): Promise<void> => {
       try {
-        setLoadingState('loading');
+        setLoadingState("loading");
 
         try {
-          // Access static image from Firebase storage
           const staticRef = ref(storage, `/${path}.webp`);
           const staticUrl = await getDownloadURL(staticRef);
-          if (isMounted) {
-            setImageUrl(staticUrl);
-            setLoadingState('loaded');
-          }
+
+          if (!isMounted) return;
+
+          setImageUrl(staticUrl);
+          setLoadingState("loaded");
+
+          // Analytics: successful fetch from Firebase Storage
+          trackEvent("image_fetch_success", {
+            path,
+            source: "firebase_storage",
+          });
         } catch (error) {
           console.error("Error loading static image:", error);
-          if (isMounted) setLoadingState('error');
-          if (onError) onError(error instanceof Error ? error : new Error(String(error)));
-        }
-        return;
 
+          if (isMounted) setLoadingState("error");
+
+          const err =
+            error instanceof Error ? error : new Error(String(error));
+
+          // Analytics: fetch error from Firebase Storage
+          trackEvent("image_fetch_error", {
+            path,
+            source: "firebase_storage",
+          });
+
+          if (onError) onError(err);
+        }
       } catch (error) {
         console.error("Error in image loading:", error);
-        if (isMounted) setLoadingState('error');
-        if (onError) onError(error instanceof Error ? error : new Error(String(error)));
+
+        if (isMounted) setLoadingState("error");
+
+        const err =
+          error instanceof Error ? error : new Error(String(error));
+
+        // Analytics: generic image loading error
+        trackEvent("image_loading_exception", {
+          path,
+        });
+
+        if (onError) onError(err);
       }
     };
 
@@ -98,18 +126,17 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
   // Setup intersection observer for lazy loading
   useEffect(() => {
-    if (priority || loading === 'eager' || !imgRef.current) {
+    if (priority || loading === "eager" || !imgRef.current) {
       return;
     }
 
     // Only observe if in loading state and we have a URL
-    if (loadingState === 'loading' && imageUrl) {
-      // Store a reference to the current DOM node to use in cleanup
+    if (loadingState === "loading" && imageUrl) {
       const currentImgRef = imgRef.current;
 
       const observer = new IntersectionObserver(
         (entries) => {
-          entries.forEach(entry => {
+          entries.forEach((entry) => {
             if (entry.isIntersecting) {
               const img = entry.target as HTMLImageElement;
               img.src = imageUrl;
@@ -117,7 +144,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
             }
           });
         },
-        { rootMargin: '200px' } // Start loading when within 200px of viewport
+        { rootMargin: "200px" }
       );
 
       observer.observe(currentImgRef);
@@ -125,7 +152,6 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
       return () => {
         if (observerRef.current) {
-          // Use the captured reference instead of imgRef.current
           observerRef.current.unobserve(currentImgRef);
         }
       };
@@ -136,18 +162,25 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
   // Handle image loaded event
   const handleImageLoaded = (): void => {
-    setLoadingState('loaded');
+    setLoadingState("loaded");
     if (onLoad) onLoad();
+    // We *could* log a render success here, but we already track fetch success.
   };
 
-  // Handle image error event
+  // Handle image error event (render-level)
   const handleImageError = (): void => {
-    setLoadingState('error');
-    if (onError) onError(new Error('Image failed to load'));
+    setLoadingState("error");
+
+    // Analytics: browser failed to render the image
+    trackEvent("image_render_error", {
+      path,
+    });
+
+    if (onError) onError(new Error("Image failed to render"));
   };
 
   // Render placeholder while loading
-  if (loadingState === 'loading') {
+  if (loadingState === "loading") {
     return (
       <div
         className={`optimized-image-placeholder ${className} h-full w-full flex items-center justify-center relative`}
@@ -161,22 +194,24 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   }
 
   // Render error state
-  if (loadingState === 'error') {
+  if (loadingState === "error") {
     return (
       <div
         className={`optimized-image-error ${className}`}
         style={{
-          width: width || '100%',
-          height: height || '100%',
-          backgroundColor: '#00000099',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '5px',
+          width: width || "100%",
+          height: height || "100%",
+          backgroundColor: "#00000099",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "5px",
           ...style,
         }}
       >
-        <small className='italic text-white text-[clamp(.6rem,2vw,.8rem)]'>Image failed to load</small>
+        <small className="italic text-white text-[clamp(.6rem,2vw,.8rem)]">
+          Image failed to load
+        </small>
       </div>
     );
   }
@@ -184,47 +219,55 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   // Render the image
   return (
     <div className={`optimized-image-container ${className}`} style={style}>
-      {imageUrl ? (objectFit == 'cover' ? (
-        <Image
-          src={imageUrl}
-          alt={alt || ''}
-          title={title || ''}
-          onLoad={handleImageLoaded}
-          onError={handleImageError}
-          style={{
-            objectFit,
-          }}
-          fill
-          sizes={sizes || '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'}
-          quality={quality}
-          priority={priority}
-          loading={!priority ? loading : 'eager'}
-        />
-      )
-        :
-        (
+      {imageUrl ? (
+        objectFit === "cover" ? (
           <Image
             src={imageUrl}
-            alt={alt || ''}
-            title={title || ''}
-            width={typeof width === 'number' ? width : 1200}
-            height={typeof height === 'number' ? height : 800}
+            alt={alt || ""}
+            title={title || ""}
             onLoad={handleImageLoaded}
             onError={handleImageError}
             style={{
               objectFit,
-              width: width || '100%',
-              height: height || 'auto',
             }}
-            sizes={sizes || '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'}
+            fill
+            sizes={
+              sizes ||
+              "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            }
             quality={quality}
             priority={priority}
-            loading={!priority ? loading : 'eager'}
+            loading={!priority ? loading : "eager"}
+          />
+        ) : (
+          <Image
+            src={imageUrl}
+            alt={alt || ""}
+            title={title || ""}
+            width={typeof width === "number" ? width : 1200}
+            height={typeof height === "number" ? height : 800}
+            onLoad={handleImageLoaded}
+            onError={handleImageError}
+            style={{
+              objectFit,
+              width: width || "100%",
+              height: height || "auto",
+            }}
+            sizes={
+              sizes ||
+              "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            }
+            quality={quality}
+            priority={priority}
+            loading={!priority ? loading : "eager"}
             unoptimized
           />
         )
       ) : (
-        <div className="image-placeholder" style={{ width: width || '100%', height: height || '300px' }}></div>
+        <div
+          className="image-placeholder"
+          style={{ width: width || "100%", height: height || "300px" }}
+        />
       )}
     </div>
   );

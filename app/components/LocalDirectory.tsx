@@ -1,5 +1,8 @@
+"use client";
+
 import { motion } from "framer-motion";
-import React, { JSX, useEffect, useState } from "react";
+import React, { JSX, useEffect, useRef, useState } from "react";
+import { trackEvent } from "@/lib/analytics";
 
 const ASE_DESTINATIONS: Array<{ name: string; price: string; distance: string; link: string }> = [
     {
@@ -83,10 +86,10 @@ const F_AND_B_DESTINATIONS: Array<{ name: string; price: string; distance: strin
     },
 ];
 
-
 export default function LocalDirectory(): JSX.Element {
-    const [elementInView, setElementInView] = useState(false)
-    const [displayCat, setDisplayCat] = useState('Main Menu')
+    const [elementInView, setElementInView] = useState(false);
+    const [displayCat, setDisplayCat] = useState("Main Menu");
+    const hasLoggedViewRef = useRef(false);
 
     useEffect(() => {
         if (typeof window === "undefined") return;
@@ -94,26 +97,30 @@ export default function LocalDirectory(): JSX.Element {
         const element = document.getElementById("local-directory");
         if (!element) return;
 
-        // Create an observer with a threshold of 0.5 (50% visible)
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
                         setElementInView(true);
 
+                        if (!hasLoggedViewRef.current) {
+                            hasLoggedViewRef.current = true;
+                            trackEvent("local_directory_view", {
+                                section_id: "local_directory",
+                            });
+                        }
                     } else if (entry.intersectionRatio === 0) {
                         setElementInView(false);
                     }
                 });
             },
             {
-                threshold: [0, 0.5], // trigger when fully out or 50% in view
+                threshold: [0, 0.5],
             }
         );
 
         observer.observe(element);
 
-        // Cleanup
         return () => {
             if (element) observer.unobserve(element);
         };
@@ -178,7 +185,14 @@ export default function LocalDirectory(): JSX.Element {
                                             initial={{ opacity: 0 }}
                                             animate={{ opacity: elementInView ? 1 : 0 }}
                                             transition={{ delay: elementInView ? 1.6 : 0, duration: 1 }}
-                                            onClick={() => setDisplayCat(cat)}
+                                            onClick={() => {
+                                                setDisplayCat(cat);
+                                                trackEvent("local_directory_category_select", {
+                                                    category: cat,
+                                                    section_id: "local_directory",
+                                                    source: "main_menu",
+                                                });
+                                            }}
                                         >
                                             {cat}
                                         </motion.button>
@@ -253,7 +267,16 @@ const FAndBSection = ({ display, selectCat }: { display: boolean, selectCat: (ca
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: display ? 1 : 0 }}
                                 transition={{ delay: display ? 2 + i * 0.1 + 0.05 : 0, duration: 0 }}
-                                style={{ display: 'inline-block', maxWidth: '60ch' }}
+                                style={{ display: "inline-block", maxWidth: "60ch" }}
+                                onClick={() => {
+                                    trackEvent("local_directory_click", {
+                                        business_name: dest.name,
+                                        category: "food_and_drink",
+                                        price_band: dest.price,
+                                        distance_label: dest.distance,
+                                        link: dest.link,
+                                    });
+                                }}
                             >
                                 <span className="md:hidden">
                                     {i + 1}.&nbsp;
@@ -308,7 +331,12 @@ const FAndBSection = ({ display, selectCat }: { display: boolean, selectCat: (ca
                                     animate={{ opacity: display ? 1 : 0 }}
                                     transition={{ delay: display ? 1.6 : 0, duration: 1 }}
                                     onClick={() => {
-                                        selectCat(cat)
+                                        selectCat(cat);
+                                        trackEvent("local_directory_category_select", {
+                                            category: cat,
+                                            section_id: "local_directory",
+                                            source: "section_footer",
+                                        });
                                     }}
                                     className="relative px-1"
                                 >
@@ -382,7 +410,16 @@ const ArtAndCultureSection = ({ display, selectCat }: { display: boolean, select
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: display ? 1 : 0 }}
                                 transition={{ delay: display ? 2 + i * 0.1 + 0.05 : 0, duration: 0 }}
-                                style={{ display: 'inline-block', maxWidth: '60ch' }}
+                                style={{ display: "inline-block", maxWidth: "60ch" }}
+                                onClick={() => {
+                                    trackEvent("local_directory_click", {
+                                        business_name: dest.name,
+                                        category: "arts_and_culture",
+                                        price_band: dest.price,
+                                        distance_label: dest.distance,
+                                        link: dest.link,
+                                    });
+                                }}
                             >
                                 <span className="md:hidden">
                                     {i + 1}.&nbsp;
@@ -437,7 +474,12 @@ const ArtAndCultureSection = ({ display, selectCat }: { display: boolean, select
                                     animate={{ opacity: display ? 1 : 0 }}
                                     transition={{ delay: display ? 1.6 : 0, duration: 1 }}
                                     onClick={() => {
-                                        selectCat(cat)
+                                        selectCat(cat);
+                                        trackEvent("local_directory_category_select", {
+                                            category: cat,
+                                            section_id: "local_directory",
+                                            source: "section_footer",
+                                        });
                                     }}
                                     className="relative px-1"
                                 >
@@ -509,7 +551,16 @@ const ActivitiesSportsEventsSection = ({ display, selectCat }: { display: boolea
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: display ? 1 : 0 }}
                                 transition={{ delay: display ? 2 + i * 0.1 + 0.05 : 0, duration: 0 }}
-                                style={{ display: 'inline-block', maxWidth: '60ch' }}
+                                style={{ display: "inline-block", maxWidth: "60ch" }}
+                                onClick={() => {
+                                    trackEvent("local_directory_click", {
+                                        business_name: dest.name,
+                                        category: "activities_sport_events",
+                                        price_band: dest.price,
+                                        distance_label: dest.distance,
+                                        link: dest.link,
+                                    });
+                                }}
                             >
                                 <span className="md:hidden">
                                     {i + 1}.&nbsp;
@@ -564,7 +615,12 @@ const ActivitiesSportsEventsSection = ({ display, selectCat }: { display: boolea
                                     animate={{ opacity: display ? 1 : 0 }}
                                     transition={{ delay: display ? 1.6 : 0, duration: 1 }}
                                     onClick={() => {
-                                        selectCat(cat)
+                                        selectCat(cat);
+                                        trackEvent("local_directory_category_select", {
+                                            category: cat,
+                                            section_id: "local_directory",
+                                            source: "section_footer",
+                                        });
                                     }}
                                     className="relative px-1"
                                 >

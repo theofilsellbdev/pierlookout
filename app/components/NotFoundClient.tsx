@@ -1,17 +1,48 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React, { useEffect } from "react";
 import { Navbar, Footer } from "@/components/Navigation";
 import OptimizedImage from "@/components/OptimisedImage";
 import Link from "next/link";
+import { trackEvent } from "@/lib/analytics";
 
 export default function NotFoundClient() {
   // Button animation on hover
-  const buttonAnimation = "transform transition-transform duration-300 hover:scale-105 active:scale-95";
+  const buttonAnimation =
+    "transform transition-transform duration-300 hover:scale-105 active:scale-95";
+
+  useEffect(() => {
+    const path =
+      typeof window !== "undefined" ? window.location.pathname : undefined;
+    const referrer =
+      typeof document !== "undefined" && document.referrer
+        ? document.referrer
+        : undefined;
+
+    trackEvent("not_found_view", {
+      path,
+      referrer,
+    });
+  }, []);
+
+  const handleReturnHomeClick = () => {
+    trackEvent("not_found_return_home_click", {
+      destination: "/",
+    });
+  };
+
+  const handleBookClick = () => {
+    // Reuse your main booking event with a location flag
+    trackEvent("book_now_click", {
+      location: "not_found_page",
+      source: "404_cta",
+    });
+  };
 
   return (
-    <div className="w-screen min-h-screen flex flex-col overflow-y-auto bg-[#FAFCFC]"
-      style={{fontFamily: "--var-shippori-serif"}}
+    <div
+      className="w-screen min-h-screen flex flex-col overflow-y-auto bg-[#FAFCFC]"
+      style={{ fontFamily: "--var-shippori-serif" }}
     >
       <header>
         <Navbar />
@@ -39,24 +70,28 @@ export default function NotFoundClient() {
           <h2 className="font-[--font-shippori-serif] text-stone-800 mb-[clamp(.4rem,2vw,.8rem)] text-[clamp(.8rem,2vw,1.2rem)] font-light">
             {`We couldn't find that page`}
           </h2>
-          
+
           <h3 className="text-stone-700 font-medium mb-[clamp(.4rem,2vw,.8rem)] text-[clamp(.75rem,2vw,1rem)] leading-relaxed">
-            The page you are looking for might have been removed, had its name changed, 
-            or is temporarily unavailable.
+            The page you are looking for might have been removed, had its name
+            changed, or is temporarily unavailable.
           </h3>
-          
+
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Link 
+            <Link
               href="/"
+              onClick={handleReturnHomeClick}
               className={`px-6 py-4 outline outline-offset-[-1px] outline-stone-600 flex justify-center items-center transition-colors ${buttonAnimation}`}
             >
               <p className="text-stone-700 font-medium font-[--font-shippori-serif] uppercase tracking-widest text-center text-[clamp(.8rem,2vw,1rem)]">
                 Return Home
               </p>
             </Link>
-            
-            <Link 
-              href="https://via.eviivo.com/PierLookoutBN21" 
+
+            <Link
+              href="https://via.eviivo.com/PierLookoutBN21"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={handleBookClick}
               className={`px-6 py-4 outline outline-offset-[-1px] outline-stone-600 flex justify-center items-center transition-colors ${buttonAnimation}`}
             >
               <p className="text-stone-700 font-medium font-[--font-shippori-serif] uppercase tracking-widest text-center text-[clamp(.8rem,2vw,1rem)]">

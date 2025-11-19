@@ -1,7 +1,17 @@
+"use client";
+
 import OptimizedImage from "@/components/OptimisedImage";
 import Link from "next/link";
+import { trackEvent } from "@/lib/analytics";
 
 export default function HeroSection() {
+    const handleBookClick = () => {
+        trackEvent("book_now_click", {
+            location: "hero_section",
+            source: "hero_primary_cta",
+        });
+    };
+
     return (
         <section
             className="w-full h-[80vh] relative mt-[5rem] px-[1rem] sm:px-[3rem] md:px-[5rem]"
@@ -14,7 +24,10 @@ export default function HeroSection() {
             <h1 id="pier-lookout-title" className="sr-only">
                 Pier Lookout - Stunning Coastal Flat for Rent
             </h1>
-            <meta name="description" content="Experience breathtaking sea views and modern comfort at Pier Lookout. Book your stay at this beautiful coastal flat today." />
+            <meta
+                name="description"
+                content="Experience breathtaking sea views and modern comfort at Pier Lookout. Book your stay at this beautiful coastal flat today."
+            />
             {/* Hero content goes here */}
 
             <div className="w-full h-full grid grid-cols-1 sm:grid-cols-[1fr_1fr] lg:grid-cols-[3fr_2fr] grid-rows-[1fr_1fr] sm:grid-rows-1 gap-x-[2rem] gap-y-[.2rem] items-center justify-center">
@@ -37,19 +50,27 @@ export default function HeroSection() {
                     {/* Body */}
                     <div className="mt-[1rem] text-stone-800 leading-relaxed">
                         A cozy, clean, and comfortable top floor flat,&nbsp;
-                        <span className="italic font-bold">just steps from the beach</span>
+                        <span className="italic font-bold">
+                            just steps from the beach
+                        </span>
                         &nbsp;with sea and pier views.
                         <div className="mt-[1rem]">
-                            Experience breathtaking sea views and modern comfort at Pier Lookout. Book your stay at this beautiful coastal flat today. Enjoy a bright a comfortable flat in the summer or a cozy retreat in the winter, with all the amenities you need for a relaxing getaway.
+                            Experience breathtaking sea views and modern comfort
+                            at Pier Lookout. Book your stay at this beautiful
+                            coastal flat today. Enjoy a bright a comfortable flat
+                            in the summer or a cozy retreat in the winter, with all
+                            the amenities you need for a relaxing getaway.
                         </div>
                     </div>
                     {/* CTA */}
-
                     <div className="mt-[2rem] flex">
                         <Link
                             href="https://via.eviivo.com/PierLookoutBN21"
-                            className="pr-2 relative group "
+                            className="pr-2 relative group"
                             style={{ fontFamily: "var(--font-shippori-serif)" }}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={handleBookClick}
                         >
                             Book Now
                             <div
@@ -60,6 +81,5 @@ export default function HeroSection() {
                 </div>
             </div>
         </section>
-    )
+    );
 }
-
