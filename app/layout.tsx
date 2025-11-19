@@ -1,6 +1,7 @@
 import { Cormorant, Shippori_Mincho, Goudy_Bookletter_1911 } from "next/font/google";
 import "./globals.css";
 import { GAListener } from "./GAListener";
+import { Suspense } from "react";
 
 const shipporiSerif = Shippori_Mincho({
   variable: "--font-shippori-serif",
@@ -60,7 +61,10 @@ export default function RootLayout({
         className={`${shipporiSerif.variable} ${cormorantSerif.variable} ${goudySerif.variable} antialiased bg-[#FAFCFC]`}
       >
         {/* Global analytics route listener */}
-        <GAListener />
+        <Suspense fallback={null}>
+
+          <GAListener />
+        </Suspense>
         {children}
       </body>
     </html>

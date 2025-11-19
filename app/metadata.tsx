@@ -1,127 +1,105 @@
-import { Metadata } from 'next';
-// Removed Firebase imports as we'll use static images for core metadata
+import type { Metadata, Viewport } from "next";
 
 // --- Configuration Constants ---
-const SITE_TITLE = "Pier Lookout, Seafront Views from a regency Flat in Eastbourne";
-const SITE_DESCRIPTION = "A top floor regency flat with breathtaking views of the Eastbourne pier and seafront. Enjoy an apartment with perfect sea views.";
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://pierlookout--pierlookout.europe-west4.hosted.app'; // Use env var if available
+const SITE_TITLE =
+  "Pier Lookout, Seafront Views from a regency Flat in Eastbourne";
+const SITE_DESCRIPTION =
+  "A top floor regency flat with breathtaking views of the Eastbourne pier and seafront. Enjoy an apartment with perfect sea views.";
+const BASE_URL =
+  process.env.NEXT_PUBLIC_BASE_URL ||
+  "https://pierlookout--pierlookout.europe-west4.hosted.app";
 
 // Recommended OG Image size: 1200x630 (1.91:1 ratio)
 const OG_IMAGE_WIDTH = 1200;
 const OG_IMAGE_HEIGHT = 630;
-const OG_IMAGE_URL = `${BASE_URL}/og-image.jpg`; // Place 'og-image.jpg' (1200x630) in /public folder
-const TWITTER_IMAGE_URL = `${BASE_URL}/twitter-image.jpg`; // Place 'twitter-image.jpg' (e.g., 1200x630 or 1024x512) in /public folder
-const FAVICON_BASE = "/"; // Assuming favicons are in the /public root
+const OG_IMAGE_URL = `${BASE_URL}/og-image.jpg`;
+const TWITTER_IMAGE_URL = `${BASE_URL}/twitter-image.jpg`;
+const FAVICON_BASE = "/";
 
-/**
- * Generates metadata using static assets for core elements.
- */
+// ✅ Viewport must be exported separately
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  // themeColor: "#ffffff",
+};
+
+// ✅ Only SEO metadata here – no `viewport` key
 export async function generateMetadata(): Promise<Metadata> {
-
-  // --- Metadata Object ---
   return {
-    // **Core Metadata**
-    metadataBase: new URL(BASE_URL), // Important for resolving relative image paths
+    // Core
+    metadataBase: new URL(BASE_URL),
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
     keywords: [
-        "Eastbourne accommodation",
-        "seafront flat",
-        "Eastbourne pier",
-        "luxury accommodation",
-        "holiday rental",
-        "East Sussex coast",
-        "sea views"
-      ], // Added a few relevant keywords
+      "Eastbourne accommodation",
+      "seafront flat",
+      "Eastbourne pier",
+      "luxury accommodation",
+      "holiday rental",
+      "East Sussex coast",
+      "sea views",
+    ],
 
-    // **Open Graph (Facebook, LinkedIn, etc.)**
+    // Open Graph
     openGraph: {
-      title: SITE_TITLE, // Use consistent title
-      description: SITE_DESCRIPTION, // Use consistent description
-      url: BASE_URL, // Canonical URL for the page being shared
+      title: SITE_TITLE,
+      description: SITE_DESCRIPTION,
+      url: BASE_URL,
       siteName: "Pier Lookout",
       images: [
         {
-          url: OG_IMAGE_URL, // Static URL to image in /public
+          url: OG_IMAGE_URL,
           width: OG_IMAGE_WIDTH,
           height: OG_IMAGE_HEIGHT,
-          alt: "Sea view from Pier Lookout apartment window in Eastbourne", // More specific alt text
+          alt: "Sea view from Pier Lookout apartment window in Eastbourne",
         },
-        // You could add more images here if needed
       ],
       locale: "en_GB",
       type: "website",
     },
 
-    // **Twitter Card**
+    // Twitter
     twitter: {
       card: "summary_large_image",
-      title: SITE_TITLE, // Use consistent title
-      description: SITE_DESCRIPTION, // Use consistent description
-      // No need for creator/site tags unless you have specific Twitter handles
-      images: [TWITTER_IMAGE_URL], // Static URL to image in /public (can be same as OG_IMAGE_URL)
+      title: SITE_TITLE,
+      description: SITE_DESCRIPTION,
+      images: [TWITTER_IMAGE_URL],
     },
 
-    // **Search Engine Directives**
+    // Robots
     robots: {
       index: true,
       follow: true,
       googleBot: {
         index: true,
         follow: true,
-        "max-image-preview": "large", // Allow large image previews in search results
-        "max-snippet": -1, // Allow Google to choose snippet length
-        "max-video-preview": -1, // Allow video previews if applicable
-        "noarchive": false, // Allow caching (usually desired)
+        "max-image-preview": "large",
+        "max-snippet": -1,
+        "max-video-preview": -1,
+        noarchive: false,
       },
     },
 
-    // **Icons (MUST be static paths in /public)**
+    // Icons
     icons: {
-      icon: `${FAVICON_BASE}favicon.ico`, // Standard favicon
-      shortcut: `${FAVICON_BASE}favicon-16x16.png`, // Legacy shortcut
-      apple: `${FAVICON_BASE}apple-touch-icon.png`, // Apple touch icon
-      // Consider adding other sizes like 192x192 for Android Chrome
-      // other: [
-      //   { rel: 'icon', type: 'image/png', sizes: '32x32', url: `${FAVICON_BASE}favicon-32x32.png` },
-      //   { rel: 'icon', type: 'image/png', sizes: '192x192', url: `${FAVICON_BASE}android-chrome-192x192.png` },
-      // ],
+      icon: `${FAVICON_BASE}favicon.ico`,
+      shortcut: `${FAVICON_BASE}favicon-16x16.png`,
+      apple: `${FAVICON_BASE}apple-touch-icon.png`,
     },
 
-     // **Manifest (for PWA features)**
-     manifest: `${FAVICON_BASE}site.webmanifest`, // Place site.webmanifest in /public
+    // Manifest
+    manifest: `${FAVICON_BASE}site.webmanifest`,
 
-
-    // **Viewport Configuration**
-    viewport: {
-      width: "device-width",
-      initialScale: 1,
-      // Add theme color if applicable
-      // themeColor: '#ffffff',
-    },
-
-    // **Verification**
+    // Verification (swap in your real token when ready)
     verification: {
-      // Add your actual Google Search Console verification token
       google: "YOUR_GOOGLE_VERIFICATION_TOKEN",
-      // Add other verification tokens if needed (e.g., Bing, Yandex)
-      // yandex: '...',
-      // other: {
-      //   me: ['my-email@example.com', 'my-link@example.com'],
-      // }
     },
 
-    // **Canonical URL**
+    // Canonical
     alternates: {
-      canonical: BASE_URL, // Canonical URL for the homepage
-      // Add language alternates if applicable
-      // languages: {
-      //   'en-US': 'https://example.com/en-US',
-      // },
+      canonical: BASE_URL,
     },
 
-    // **Other Useful Tags**
-    // assets: ['https://example.com/assets/'], // If you host assets elsewhere
-    category: 'travel', // Category relevant to your site
+    category: "travel",
   };
 }
