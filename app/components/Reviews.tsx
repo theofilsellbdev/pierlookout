@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { franc } from "franc";
+import langs from "langs";
+
 
 export interface EviivoReview {
     name: string;
@@ -49,20 +52,53 @@ const isReviewsResponse = (v: unknown): v is EviivoReviewsResponse =>
     Array.isArray(v.reviews) &&
     v.reviews.every(isReview);
 
+
+function detectLanguage(text: string) {
+    const code = franc(text); // e.g. "eng", "deu", "fra", etc.
+
+    // franc returns "und" if confident detection fails
+    if (code === "und") return { iso: "und", language: "Unknown" };
+
+    const lang = langs.where("3", code);
+    return {
+        iso: code,
+        language: lang?.name ?? "Unknown",
+    };
+}
+
 export default function Reviews() {
     const [reviews, setReviews] = useState<EviivoReview[]>([]);
     const [currentPage, setCurrentPage] = useState(0);
 
     const fetchReviews = async () => {
         try {
-            const res = await fetch(`/api/eviivo-reviews?shortname=PierLookoutBN21&page=1`, { next: { revalidate: 3600 } });
-            // Check if the response is okay
-            if (!res.ok) { console.error("❌ Failed to fetch reviews:", res.status, res.statusText); return; } // Early return on bad response
-            // Parse the JSON response
-            const data: unknown = await res.json();
-            // ✅ Validate response before setting state
-            if (isReviewsResponse(data)) setReviews(data.reviews);
-            else console.error("❌ Invalid review data shape:", data);
+            // Cycle through pages until the review has "hasNext" false.
+            let hasNext = true;
+            let p = 1
+            let allReviews: EviivoReview[] = [];
+            while (hasNext) {
+                const res = await fetch(`/api/eviivo-reviews?shortname=PierLookoutBN21&page=${p}`, { next: { revalidate: 3600 } });
+                // Check if the response is okay
+                if (!res.ok) { console.error("❌ Failed to fetch reviews:", res.status, res.statusText); return; } // Early return on bad response
+                // Parse the JSON response
+                const data: unknown = await res.json();
+                // ✅ Validate response before setting state
+                if (isReviewsResponse(data)) {
+                    // Language detection, remove non-English reviews
+                    const filteredReviews = data.reviews.filter(review => {
+                        const { iso } = detectLanguage(review.body);
+                        return iso === "eng";
+                    });
+                    allReviews = allReviews.concat(filteredReviews);
+                    hasNext = data.hasNext;
+                    p += 1;
+                }
+                else {
+                    console.error("❌ Invalid review data shape:", data);
+                    return; // Exit on invalid data
+                }
+            }
+            setReviews(allReviews);
         } catch (err) {
             // ✅ Catch and log any errors during fetch or parsing
             console.error("❌ Error fetching reviews:", err);
@@ -96,7 +132,7 @@ export default function Reviews() {
                         </footer>
                         {/* Left Arrow */}
                         <div className="w-full h-[2rem] px-[3rem] col-span-1 row-span-1 flex items-center justify-center opacity-40 hover:opacity-100 cursor-pointer transition duration-200">
-                            <div className="relative w-full h-auto aspect-[1/5]">
+                            <div className="relative w-full h-auto aspect-[1/5] min-w-[50px]">
                                 <Image
                                     src="/arrow.png"
                                     fill
@@ -112,7 +148,7 @@ export default function Reviews() {
                         </div>
                         {/* Right Arrow */}
                         <div className="w-full h-[2rem] px-[3rem] col-span-1 row-span-1 flex items-center justify-center opacity-40 hover:opacity-100 cursor-pointer transition duration-200">
-                            <div className="relative w-full h-auto aspect-[1/5] scale-x-[-1]">
+                            <div className="relative w-full h-auto aspect-[1/5] scale-x-[-1] min-w-[50px]">
                                 <Image
                                     src="/arrow.png"
                                     fill

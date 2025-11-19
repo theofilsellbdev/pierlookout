@@ -106,7 +106,7 @@ export default function LandingSection() {
                         aria-labelledby="pier-lookout-title"
                         id="pier-lookout-title"
                     >
-                        A flat in the heart of Eastbourne,&nbsp;<motion.span className="italic font-bold">just steps from the beach</motion.span>&nbsp;with sea and pier views.
+                        A top floor flat in the heart of Eastbourne,&nbsp;<motion.span className="italic font-bold">just steps from the beach</motion.span>&nbsp;with sea and pier views.
                     </motion.h1>
                 </div>
 

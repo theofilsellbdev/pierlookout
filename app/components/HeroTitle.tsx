@@ -36,7 +36,7 @@ export default function HeroSection() {
                     <h2 className="hidden sm:block">Pier Lookout</h2>
                     {/* Body */}
                     <div className="mt-[1rem] text-stone-800 leading-relaxed">
-                        A cozy, clean, and comfortable flat,&nbsp;
+                        A cozy, clean, and comfortable top floor flat,&nbsp;
                         <span className="italic font-bold">just steps from the beach</span>
                         &nbsp;with sea and pier views.
                         <div className="mt-[1rem]">

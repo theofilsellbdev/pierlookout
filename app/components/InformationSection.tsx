@@ -75,7 +75,7 @@ export default function InformationSection(): JSX.Element {
                     {/* About the flat: */}
                     <h3 className="text-[clamp(.7rem,2vw,1.2rem)] mb-1">About the flat:</h3>
                     <p className="text-[clamp(.65rem,2vw,1rem)]">
-                        Pier Lookout is a tranquil top-floor apartment with sweeping sea views over Eastbourne’s historic pier. Just steps from the beach, it blends coastal charm with modern comfort. The bright open-plan living space is perfect for slow mornings or quiet evenings, complete with an acoustic guitar for relaxed nights in.
+                        Pier Lookout is a tranquil top-floor apartment with sweeping sea views over Eastbourne’s historic pier. Just steps from the beach, it blends coastal charm with modern comfort. The bright open-plan living space is perfect for slow mornings or quiet evenings.
                     </p>
                     {/* Divider */}<div className="w-full h-[1px] bg-gray-300 my-4" />
                     {/* Contact */}
